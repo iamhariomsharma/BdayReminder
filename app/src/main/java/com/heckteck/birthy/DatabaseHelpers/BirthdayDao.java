@@ -13,6 +13,6 @@ public interface BirthdayDao {
     @Insert
     void insert(Birthday birthday);
 
-    @Query("SELECT * FROM birthdays_table ORDER BY name ASC")
+    @Query("SELECT * FROM birthdays_table ORDER BY date ASC")
     LiveData<List<Birthday>> getAllBirthdays();
 }

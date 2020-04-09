@@ -39,6 +39,8 @@ import com.heckteck.birthy.ViewModel.AddBirthdayViewModel;
 import com.heckteck.birthy.ViewModel.BirthdayViewModel;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 
 import java.io.File;
 import java.io.IOException;
@@ -179,6 +181,8 @@ public class AddBirthdayFragment extends Fragment {
         dob = et_dob.getText().toString().trim();
         timeToWish = et_timePicker.getText().toString().trim();
 
+        long dateTime = convertToDateTime(dob);
+
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
@@ -190,6 +194,7 @@ public class AddBirthdayFragment extends Fragment {
 
         Birthday birthday = new Birthday("" + name,
                 "" + dob,
+                "" + dateTime,
                 "" + phone,
                 "" + notes,
                 "" + timeToWish,
@@ -197,12 +202,24 @@ public class AddBirthdayFragment extends Fragment {
                 "" + imgUri);
 
         addBirthdayViewModel.insert(birthday);
-//        birthdayAdapter.notifyDataSetChanged();
         Toast.makeText(getActivity(), "Birthday Inserted successfully", Toast.LENGTH_SHORT).show();
         getActivity().finish();
 
         startAlarm();
 
+    }
+
+    private long convertToDateTime(String stringToConvert) {
+        String[] newStringArray = convertStingToArray(stringToConvert);
+        int year = Integer.parseInt(newStringArray[2].trim());
+        int month = Integer.parseInt(newStringArray[1].trim());
+        int day = Integer.parseInt(newStringArray[0].trim());
+        LocalDate mLocalDate = new LocalDate(year, month, day);
+        return mLocalDate.toDate().getTime();
+    }
+
+    private String[] convertStingToArray(String stringToConvert) {
+        return stringToConvert.split("/");
     }
 
     private void startAlarm() {

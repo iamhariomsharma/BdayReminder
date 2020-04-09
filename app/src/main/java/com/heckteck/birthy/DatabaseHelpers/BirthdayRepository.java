@@ -3,6 +3,8 @@ package com.heckteck.birthy.DatabaseHelpers;
 import android.app.Application;
 import android.os.AsyncTask;
 
+import com.heckteck.birthy.Activities.MainActivity;
+
 import java.util.List;
 
 import androidx.lifecycle.LiveData;

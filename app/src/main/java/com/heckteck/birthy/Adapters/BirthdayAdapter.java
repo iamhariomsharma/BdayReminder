@@ -133,6 +133,7 @@ public class BirthdayAdapter extends ListAdapter<Birthday, BirthdayAdapter.Birth
         return mLocalDate.toDateTime(LocalTime.fromDateFields(mLocalDate.toDate()));
     }
 
+
     private String[] convertStingToArray(String stringToConvert) {
         return stringToConvert.split("/");
     }

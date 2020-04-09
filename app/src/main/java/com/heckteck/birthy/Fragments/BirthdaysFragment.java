@@ -28,8 +28,8 @@ import java.util.List;
  */
 public class BirthdaysFragment extends Fragment {
 
-    BirthdayViewModel birthdayViewModel;
-    FloatingActionButton fab_add;
+    private BirthdayViewModel birthdayViewModel;
+    private FloatingActionButton fab_add;
 
 
     public BirthdaysFragment() {

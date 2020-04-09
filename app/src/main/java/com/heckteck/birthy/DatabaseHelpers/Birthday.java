@@ -11,6 +11,7 @@ public class Birthday {
 
     private String name;
     private String birthDate;
+    private String date;
     private String phoneNumber;
     private String notes;
     private String timeToWish;
@@ -18,9 +19,10 @@ public class Birthday {
     private String userImg;
 
 
-    public Birthday(String name, String birthDate, String phoneNumber, String notes, String timeToWish, String currentDateTime, String userImg) {
+    public Birthday(String name, String birthDate, String date, String phoneNumber, String notes, String timeToWish, String currentDateTime, String userImg) {
         this.name = name;
         this.birthDate = birthDate;
+        this.date = date;
         this.phoneNumber = phoneNumber;
         this.notes = notes;
         this.timeToWish = timeToWish;
@@ -28,6 +30,13 @@ public class Birthday {
         this.userImg = userImg;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     public String getUserImg() {
         return userImg;

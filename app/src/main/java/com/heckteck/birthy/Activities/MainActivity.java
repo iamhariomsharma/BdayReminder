@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.ColorSpace;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,6 +15,11 @@ import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.heckteck.birthy.R;
+import com.heckteck.birthy.Utils.Constants;
+
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 
 import java.util.zip.Inflater;
 
@@ -42,11 +48,15 @@ public class MainActivity extends AppCompatActivity {
     String sendWishesNotification;
     Toolbar toolbar;
 
+    public static String ORDER_BY = "name";
+
     @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        ORDER_BY = "date";
 
         notificationManager = NotificationManagerCompat.from(this);
         navController = Navigation.findNavController(this, R.id.navHostFragment);
@@ -98,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
         drawerToggle.syncState();
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
