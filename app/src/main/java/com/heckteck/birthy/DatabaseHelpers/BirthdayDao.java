@@ -1,0 +1,18 @@
+package com.heckteck.birthy.DatabaseHelpers;
+
+import java.util.List;
+
+import androidx.lifecycle.LiveData;
+import androidx.room.Dao;
+import androidx.room.Insert;
+import androidx.room.Query;
+
+@Dao
+public interface BirthdayDao {
+
+    @Insert
+    void insert(Birthday birthday);
+
+    @Query("SELECT * FROM birthdays_table ORDER BY name ASC")
+    LiveData<List<Birthday>> getAllBirthdays();
+}
