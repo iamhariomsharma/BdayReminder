@@ -1,7 +1,10 @@
 package com.heckteck.birthy.Activities;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -106,12 +109,18 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuBtn_sort:
-                Toast.makeText(this, "Sort Clicked", Toast.LENGTH_SHORT).show();
+                showSortDialog();
                 break;
             case R.id.menuBtn_search:
                 Toast.makeText(this, "Search Clicked", Toast.LENGTH_SHORT).show();
                 break;
         }
         return true;
+    }
+
+    private void showSortDialog() {
+        Dialog sortDialog = new Dialog(this);
+        sortDialog.setContentView(R.layout.sort_dialog);
+        sortDialog.show();
     }
 }
