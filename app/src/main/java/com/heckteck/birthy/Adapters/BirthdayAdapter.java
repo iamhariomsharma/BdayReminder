@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class BirthdayAdapter extends ListAdapter<Birthday, BirthdayAdapter.BirthdayHolder> {
 
@@ -76,7 +77,9 @@ public class BirthdayAdapter extends ListAdapter<Birthday, BirthdayAdapter.Birth
         if (birthday.getUserImg().equals("null")) {
             holder.profileImg.setAnimation(R.raw.cake_placeholder);
         } else {
-            holder.profileImg.setImageURI(Uri.parse(birthday.getUserImg()));
+            holder.circleProfile.setVisibility(View.VISIBLE);
+            holder.profileImg.setVisibility(View.INVISIBLE);
+            holder.circleProfile.setImageURI(Uri.parse(birthday.getUserImg()));
         }
 
         if (position % 4 == 0) {
@@ -150,6 +153,7 @@ public class BirthdayAdapter extends ListAdapter<Birthday, BirthdayAdapter.Birth
         TextView timeRemaining;
         TextView tv_timeline;
         LottieAnimationView profileImg;
+        CircleImageView circleProfile;
         RelativeLayout relativeLayout;
 
         public BirthdayHolder(@NonNull View itemView) {
@@ -161,6 +165,7 @@ public class BirthdayAdapter extends ListAdapter<Birthday, BirthdayAdapter.Birth
             timeRemaining = itemView.findViewById(R.id.tv_daysLeft);
             tv_timeline = itemView.findViewById(R.id.tv_timeline);
             profileImg = itemView.findViewById(R.id.profileImg);
+            circleProfile = itemView.findViewById(R.id.circleProfile);
             relativeLayout = itemView.findViewById(R.id.relativeLayout);
 
         }

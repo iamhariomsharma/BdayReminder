@@ -15,4 +15,7 @@ public interface BirthdayDao {
 
     @Query("SELECT * FROM birthdays_table ORDER BY date ASC")
     LiveData<List<Birthday>> getAllBirthdays();
+
+    @Query("SELECT * FROM birthdays_table WHERE name LIKE :searchQuery || '%'")
+    List<Birthday> getSearchBirthdays(String searchQuery);
 }
