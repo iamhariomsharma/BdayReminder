@@ -21,6 +21,7 @@ import com.heckteck.birthy.DatabaseHelpers.Birthday;
 import com.heckteck.birthy.R;
 import com.heckteck.birthy.ViewModel.BirthdayViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,7 +29,10 @@ import java.util.List;
  */
 public class BirthdaysFragment extends Fragment {
 
+    private List<Birthday> birthdayList = new ArrayList<>();
     private BirthdayViewModel birthdayViewModel;
+    private RecyclerView birthday_rv;
+    private BirthdayAdapter birthdayAdapter;
     private FloatingActionButton fab_add;
 
 
@@ -44,20 +48,19 @@ public class BirthdaysFragment extends Fragment {
 
         fab_add = view.findViewById(R.id.fab_addBday);
 
-        RecyclerView birthday_rv = view.findViewById(R.id.birthdayRecycler);
-        birthday_rv.setLayoutManager(new LinearLayoutManager(getActivity()));
-        birthday_rv.setHasFixedSize(true);
+        birthday_rv = view.findViewById(R.id.birthdayRecycler);
+        initRecyclerView();
+        initViewModel();
 
-        final BirthdayAdapter birthdayAdapter = new BirthdayAdapter();
-        birthday_rv.setAdapter(birthdayAdapter);
+//        birthdayAdapter = new BirthdayAdapter();
+//        birthday_rv.setAdapter(birthdayAdapter);
 
-        birthdayViewModel = ViewModelProviders.of(getActivity()).get(BirthdayViewModel.class);
-        birthdayViewModel.getAllBirthdays().observe(getActivity(), new Observer<List<Birthday>>() {
-            @Override
-            public void onChanged(List<Birthday> birthdays) {
-                birthdayAdapter.submitList(birthdays);
-            }
-        });
+//        birthdayViewModel.getAllBirthdays().observe(getActivity(), new Observer<List<Birthday>>() {
+//            @Override
+//            public void onChanged(List<Birthday> birthdays) {
+//                birthdayAdapter.submitList(birthdays);
+//            }
+//        });
 
         fab_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,6 +71,31 @@ public class BirthdaysFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void initViewModel(){
+        Observer<List<Birthday>> birthdayObserver = new Observer<List<Birthday>>() {
+            @Override
+            public void onChanged(List<Birthday> birthdays) {
+                birthdayList.clear();
+                birthdayList.addAll(birthdays);
+
+                if (birthdayAdapter == null){
+                    birthdayAdapter = new BirthdayAdapter(getActivity(), birthdayList);
+                    birthday_rv.setAdapter(birthdayAdapter);
+                }else {
+                    birthdayAdapter.notifyDataSetChanged();
+                }
+            }
+        };
+        birthdayViewModel = ViewModelProviders.of(getActivity()).get(BirthdayViewModel.class);
+        birthdayViewModel.getAllBirthdays().observe(getActivity(), birthdayObserver);
+    }
+
+    private void initRecyclerView(){
+        birthday_rv.setHasFixedSize(true);
+        birthday_rv.setItemViewCacheSize(10);
+        birthday_rv.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
 }

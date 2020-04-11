@@ -3,13 +3,8 @@ package com.heckteck.birthy.Activities;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.ColorSpace;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -18,24 +13,15 @@ import com.google.android.material.navigation.NavigationView;
 import com.heckteck.birthy.Adapters.BirthdayAdapter;
 import com.heckteck.birthy.DatabaseHelpers.Birthday;
 import com.heckteck.birthy.R;
-import com.heckteck.birthy.Utils.Constants;
-import com.heckteck.birthy.ViewModel.SearchViewModel;
-
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
+import com.heckteck.birthy.ViewModel.BirthdayViewModel;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
-import java.util.zip.Inflater;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
@@ -45,6 +31,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity {
@@ -59,10 +46,11 @@ public class MainActivity extends AppCompatActivity {
     String sendWishesDialog;
     String sendWishesNotification;
     Toolbar toolbar;
-    SearchView searchView;
-    SearchViewModel searchViewModel;
+    BirthdayViewModel birthdayViewModel;
     RecyclerView recyclerView;
+    List<Birthday> birthdayList = new ArrayList<>();
     BirthdayAdapter birthdayAdapter;
+    MaterialSearchView searchView;
 
 
     public static String ORDER_BY = "name";
@@ -72,8 +60,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-//        ORDER_BY = "date";
 
         notificationManager = NotificationManagerCompat.from(this);
         navController = Navigation.findNavController(this, R.id.navHostFragment);
@@ -108,11 +94,7 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawer);
         navigationView = findViewById(R.id.navigation_view);
         toolbar = findViewById(R.id.addBirthdayToolbar);
-        recyclerView = findViewById(R.id.birthdayRecycler);
-        birthdayAdapter = new BirthdayAdapter();
-
-        searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
-
+        searchView = findViewById(R.id.searchView);
         navigationView.setItemIconTintList(null);
         NavigationUI.setupWithNavController(navigationView, navController);
         setSupportActionBar(toolbar);
@@ -135,84 +117,87 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        MenuItem.OnActionExpandListener onActionExpandListener = new MenuItem.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
-                return true;
-            }
+        MenuItem item = menu.findItem(R.id.menuBtn_search);
+        searchView.setMenuItem(item);
 
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
-                return true;
-            }
-        };
-        menu.findItem(R.id.menuBtn_search).setOnActionExpandListener(onActionExpandListener);
-        searchView = (SearchView) menu.findItem(R.id.menuBtn_search).getActionView();
-        searchView.setQueryHint("Search Birthdays");
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                searchViewModel.searchBirthday(query);
                 observerSetUp();
-                searchView.clearFocus();
-                menu.findItem(R.id.menuBtn_search).collapseActionView();
+                birthdayAdapter.getFilter().filter(query);
+                searchView.closeSearch();
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                searchViewModel.searchBirthday(newText);
                 observerSetUp();
+                birthdayAdapter.getFilter().filter(newText);
                 return true;
             }
         });
 
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
-            public boolean onClose() {
-                Toast.makeText(MainActivity.this, "Search view closed", Toast.LENGTH_SHORT).show();
-                menu.findItem(R.id.menuBtn_search).collapseActionView();
-                return true;
+            public void onSearchViewShown() {
+
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                birthdayAdapter.notifyDataSetChanged();
             }
         });
 
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menuBtn_sort:
-                showSortDialog();
-                break;
-//            case R.id.menuBtn_search:
-//                searchView = (SearchView) item.getActionView();
-//                searchView.setSubmitButtonEnabled(true);
-//                searchView.setOnQueryTextListener(onQueryTextListener);
-//                break;
+        if (item.getItemId() == R.id.menuBtn_sort) {
+            showSortDialog();
         }
         return true;
     }
 
-    private void observerSetUp(){
-        searchViewModel.getSearchResults().observe(this, new Observer<List<Birthday>>() {
+    private void observerSetUp() {
+
+        Observer<List<Birthday>> birthdayObserver = new Observer<List<Birthday>>() {
             @Override
             public void onChanged(List<Birthday> birthdays) {
-                if (birthdays.size() > 0){
-                    Log.d("SearchList", birthdays.get(0).getName());
+                if (birthdays.size() > 0) {
+                    birthdayList.clear();
+                    birthdayList.addAll(birthdays);
                     recyclerView = findViewById(R.id.birthdayRecycler);
-                    birthdayAdapter.submitList(birthdays);
+                    recyclerView.setHasFixedSize(true);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                    birthdayAdapter = new BirthdayAdapter(MainActivity.this, birthdayList);
                     recyclerView.setAdapter(birthdayAdapter);
-                }else {
+                    birthdayAdapter.notifyDataSetChanged();
+                } else {
                     Toast.makeText(MainActivity.this, "No Match", Toast.LENGTH_SHORT).show();
                 }
             }
-        });
+        };
+
+        birthdayViewModel = ViewModelProviders.of(this).get(BirthdayViewModel.class);
+        birthdayViewModel.getAllBirthdays().observe(MainActivity.this, birthdayObserver);
+
     }
 
     private void showSortDialog() {
         Dialog sortDialog = new Dialog(this);
         sortDialog.setContentView(R.layout.sort_dialog);
         sortDialog.show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (searchView.isSearchOpen()) {
+            searchView.closeSearch();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

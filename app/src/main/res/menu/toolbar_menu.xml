@@ -6,8 +6,7 @@
         android:id="@+id/menuBtn_search"
         android:icon="@drawable/ic_search_black"
         android:title="Search"
-        app:showAsAction="always"
-        app:actionViewClass="androidx.appcompat.widget.SearchView"/>
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/menuBtn_sort"

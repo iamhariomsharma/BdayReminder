@@ -1,10 +1,13 @@
 package com.heckteck.birthy.Adapters;
 
+import android.content.Context;
 import android.net.Uri;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -18,6 +21,7 @@ import org.joda.time.LocalTime;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -27,32 +31,17 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class BirthdayAdapter extends ListAdapter<Birthday, BirthdayAdapter.BirthdayHolder> {
+public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.BirthdayHolder> implements Filterable {
 
+    private List<Birthday> birthdays;
+    private List<Birthday> birthdaysFiltered;
+    private Context context;
 
-    public BirthdayAdapter() {
-        super(DIFF_CALLBACK);
+    public BirthdayAdapter(Context context, List<Birthday> birthdays) {
+        this.context = context;
+        this.birthdays = birthdays;
+        this.birthdaysFiltered = birthdays;
     }
-
-    private static final DiffUtil.ItemCallback<Birthday> DIFF_CALLBACK = new DiffUtil.ItemCallback<Birthday>() {
-        @Override
-        public boolean areItemsTheSame(@NonNull Birthday oldItem, @NonNull Birthday newItem) {
-            return oldItem.getId() == newItem.getId();
-        }
-
-        @Override
-        public boolean areContentsTheSame(@NonNull Birthday oldItem, @NonNull Birthday newItem) {
-            return oldItem.getName().equals(newItem.getName()) &&
-                    oldItem.getBirthDate().equals(newItem.getBirthDate()) &&
-                    oldItem.getPhoneNumber().equals(newItem.getPhoneNumber()) &&
-                    oldItem.getCurrentDateTime().equals(newItem.getCurrentDateTime()) &&
-                    oldItem.getUserImg().equals(newItem.getUserImg()) &&
-                    oldItem.getTimeToWish().equals(newItem.getTimeToWish()) &&
-                    oldItem.getNotes().equals(newItem.getNotes());
-        }
-
-
-    };
 
     @NonNull
     @Override
@@ -63,7 +52,7 @@ public class BirthdayAdapter extends ListAdapter<Birthday, BirthdayAdapter.Birth
 
     @Override
     public void onBindViewHolder(@NonNull BirthdayHolder holder, int position) {
-        Birthday birthday = getItem(position);
+        Birthday birthday = birthdaysFiltered.get(position);
         holder.tv_name.setText(birthday.getName());
         holder.tv_birthDate.setText(birthday.getBirthDate());
 
@@ -91,6 +80,11 @@ public class BirthdayAdapter extends ListAdapter<Birthday, BirthdayAdapter.Birth
         } else if (position % 4 == 3) {
             holder.relativeLayout.setBackgroundResource(R.drawable.card_bg4);
         }
+    }
+
+    @Override
+    public int getItemCount() {
+        return birthdaysFiltered.size();
     }
 
     private void calculateNextBirthday(DateTime todayDateTime, DateTime birthdayDateTime, TextView daysRemaining, TextView timeline) {
@@ -141,9 +135,40 @@ public class BirthdayAdapter extends ListAdapter<Birthday, BirthdayAdapter.Birth
         return stringToConvert.split("/");
     }
 
-    public Birthday getBirthdayAt(int position) {
-        return getItem(position);
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                String charString = constraint.toString();
+                if (charString.isEmpty()) {
+                    birthdaysFiltered = birthdays;
+                } else {
+                    List<Birthday> filteredList = new ArrayList<>();
+                    for (Birthday row : birthdays) {
+                        if (row.getName().toLowerCase().startsWith(charString.toLowerCase())) {
+                            filteredList.add(row);
+                        }
+                    }
+                    birthdaysFiltered = filteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = birthdaysFiltered;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                birthdaysFiltered = (ArrayList<Birthday>) results.values;
+                notifyDataSetChanged();
+            }
+        };
     }
+
+//    public Birthday getBirthdayAt(int position) {
+//        return getItem(position);
+//    }
 
     class BirthdayHolder extends RecyclerView.ViewHolder {
 
