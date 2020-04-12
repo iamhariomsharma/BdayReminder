@@ -2,12 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
-
     <item
-        android:id="@+id/menuBtn_sort"
-        android:icon="@drawable/ic_sort"
-        android:title="Sort"
+        android:id="@+id/menuBtn_search"
+        android:icon="@drawable/ic_search_black"
+        android:title="Search"
         app:showAsAction="always" />
 
 </menu>

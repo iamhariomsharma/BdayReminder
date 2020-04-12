@@ -1,8 +1,7 @@
-package com.heckteck.birthy.ViewModel;
+package com.heckteck.birthy.ViewModels;
 
 import android.app.Application;
 
-import com.heckteck.birthy.Adapters.BirthdayAdapter;
 import com.heckteck.birthy.DatabaseHelpers.Birthday;
 import com.heckteck.birthy.DatabaseHelpers.BirthdayRepository;
 

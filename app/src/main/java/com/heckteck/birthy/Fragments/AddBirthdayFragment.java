@@ -31,22 +31,20 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.heckteck.birthy.Adapters.BirthdayAdapter;
 import com.heckteck.birthy.DatabaseHelpers.Birthday;
 import com.heckteck.birthy.Notifications.NotificationReceiver;
 import com.heckteck.birthy.R;
-import com.heckteck.birthy.ViewModel.AddBirthdayViewModel;
-import com.heckteck.birthy.ViewModel.BirthdayViewModel;
+import com.heckteck.birthy.ViewModels.AddBirthdayViewModel;
+import com.yalantis.ucrop.UCrop;
 
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -80,6 +78,7 @@ public class AddBirthdayFragment extends Fragment {
     private ImageButton btn_attachContact;
     int year, day, hour, minute, month;
 //    BirthdayAdapter birthdayAdapter = new BirthdayAdapter();
+    private final String SAMPLE_CROPPED_IMG_NAME = "SampleCropImg";
 
     Calendar now = Calendar.getInstance();
 
@@ -116,7 +115,7 @@ public class AddBirthdayFragment extends Fragment {
         userImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showImagePickerDialog();
+                askGalleryPermissions();
             }
         });
 
@@ -255,23 +254,23 @@ public class AddBirthdayFragment extends Fragment {
     }
 
 
-    private void showImagePickerDialog() {
-        String[] options = {"Camera", "Gallery"};
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Pick Image From");
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which == 0) {
-                    askCameraPermissions();
-                } else if (which == 1) {
-                    askGalleryPermissions();
-                }
-            }
-        });
-        builder.create().show();
-    }
+//    private void showImagePickerDialog() {
+//        String[] options = {"Camera", "Gallery"};
+//
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//        builder.setTitle("Pick Image From");
+//        builder.setItems(options, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                if (which == 0) {
+//                    askCameraPermissions();
+//                } else if (which == 1) {
+//                    askGalleryPermissions();
+//                }
+//            }
+//        });
+//        builder.create().show();
+//    }
 
     private void askGalleryPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -285,17 +284,17 @@ public class AddBirthdayFragment extends Fragment {
         }
     }
 
-    private void askCameraPermissions() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (getActivity().checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
-                requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
-            } else {
-                dispatchTakePictureIntent();
-            }
-        } else {
-            dispatchTakePictureIntent();
-        }
-    }
+//    private void askCameraPermissions() {
+//        if (Build.VERSION.SDK_INT >= 23) {
+//            if (getActivity().checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
+//                requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
+//            } else {
+//                dispatchTakePictureIntent();
+//            }
+//        } else {
+//            dispatchTakePictureIntent();
+//        }
+//    }
 
     private void askContactsPermission() {
         if (Build.VERSION.SDK_INT >= 23) {
@@ -349,18 +348,24 @@ public class AddBirthdayFragment extends Fragment {
                 }
                 break;
 
-            case IMAGE_PIC_CAMERA_CODE:
-                if (resultCode == Activity.RESULT_OK) {
-                    File file = new File(currentPhotoPath);
-                    imgUri = Uri.fromFile(file);
-                    userImg.setImageURI(imgUri);
-                }
-                break;
+//            case IMAGE_PIC_CAMERA_CODE:
+//                if (resultCode == Activity.RESULT_OK) {
+//                    File file = new File(currentPhotoPath);
+//                    imgUri = Uri.fromFile(file);
+////                    userImg.setImageURI(imgUri);
+//                    if (imgUri != null){
+//                        startCrop(imgUri);
+//                    }
+//                }
+//                break;
 
             case IMAGE_PIC_GALLERY_CODE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     imgUri = data.getData();
-                    userImg.setImageURI(imgUri);
+//                    userImg.setImageURI(imgUri);
+                    if (imgUri != null){
+                        startCrop(imgUri);
+                    }
                 }
                 break;
 
@@ -392,9 +397,50 @@ public class AddBirthdayFragment extends Fragment {
                     minute = bundle.getInt("MINUTE", 0);
                 }
                 break;
+
+            case UCrop.REQUEST_CROP:
+                if (resultCode == Activity.RESULT_OK){
+                    Uri cropImgUri = UCrop.getOutput(data);
+
+                    if (cropImgUri != null){
+                        userImg.setImageURI(cropImgUri);
+                    }
+                }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void startCrop(Uri uri){
+        String destinationFileName = SAMPLE_CROPPED_IMG_NAME;
+        destinationFileName += ".jpg";
+        Uri destinationUri = Uri.fromFile(new File(getActivity().getCacheDir(), destinationFileName));
+
+        int random = new Random().nextInt();
+        String destURI = null;
+        if(destinationUri.toString().contains("jpg")) {
+            String str = random + ".jpg";
+            destURI = destinationUri.toString().replace(".jpg", str);
+        }
+        else if(destinationUri.toString().contains("png")) {
+            String str = random + ".png";
+            destURI = destinationUri.toString().replace(".png", str);
+        }
+        destinationUri = Uri.parse(destURI);
+
+        UCrop uCrop = UCrop.of(uri, destinationUri);
+        uCrop.withAspectRatio(1, 1);
+        uCrop.withMaxResultSize(150, 150);
+        uCrop.withOptions(getCropOptions());
+        uCrop.start(getContext(), this);
+    }
+
+    private UCrop.Options getCropOptions(){
+        UCrop.Options options = new UCrop.Options();
+        options.setCompressionQuality(50);
+        options.setHideBottomControls(false);
+        options.setToolbarTitle("Crop Image");
+        return options;
     }
 
 
@@ -402,14 +448,14 @@ public class AddBirthdayFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
         switch (requestCode) {
-            case CAMERA_REQUEST_CODE: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    dispatchTakePictureIntent();
-                } else {
-                    Toast.makeText(getActivity(), "Camera Permission is required to Use Camera", Toast.LENGTH_SHORT).show();
-                }
-            }
-            break;
+//            case CAMERA_REQUEST_CODE: {
+//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    dispatchTakePictureIntent();
+//                } else {
+//                    Toast.makeText(getActivity(), "Camera Permission is required to Use Camera", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//            break;
 
             case STORAGE_REQUEST_CODE: {
                 if (grantResults.length > 0) {
@@ -436,44 +482,44 @@ public class AddBirthdayFragment extends Fragment {
     }
 
 
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
+//    private File createImageFile() throws IOException {
+//        // Create an image file name
+//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//        String imageFileName = "JPEG_" + timeStamp + "_";
+//        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+//        File image = File.createTempFile(
+//                imageFileName,  /* prefix */
+//                ".jpg",         /* suffix */
+//                storageDir      /* directory */
+//        );
+//
+//        // Save a file: path for use with ACTION_VIEW intents
+//        currentPhotoPath = image.getAbsolutePath();
+//        return image;
+//    }
 
-        // Save a file: path for use with ACTION_VIEW intents
-        currentPhotoPath = image.getAbsolutePath();
-        return image;
-    }
 
-
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(getActivity(),
-                        "com.heckteck.birthy.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, IMAGE_PIC_CAMERA_CODE);
-            }
-        }
-    }
+//    private void dispatchTakePictureIntent() {
+//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        // Ensure that there's a camera activity to handle the intent
+//        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+//            // Create the File where the photo should go
+//            File photoFile = null;
+//            try {
+//                photoFile = createImageFile();
+//            } catch (IOException ex) {
+//                // Error occurred while creating the File
+//            }
+//            // Continue only if the File was successfully created
+//            if (photoFile != null) {
+//                Uri photoURI = FileProvider.getUriForFile(getActivity(),
+//                        "com.heckteck.birthy.fileprovider",
+//                        photoFile);
+//                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//                startActivityForResult(takePictureIntent, IMAGE_PIC_CAMERA_CODE);
+//            }
+//        }
+//    }
 
     private String getZodiacSign(int paramInt1, int paramInt2) {
         String str = "";

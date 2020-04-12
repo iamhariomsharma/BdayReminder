@@ -7,13 +7,16 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.heckteck.birthy.Adapters.BirthdayAdapter;
 import com.heckteck.birthy.DatabaseHelpers.Birthday;
 import com.heckteck.birthy.R;
-import com.heckteck.birthy.ViewModel.BirthdayViewModel;
+import com.heckteck.birthy.Utils.BirthdayItemClickInterface;
+import com.heckteck.birthy.ViewModels.BirthdayViewModel;
+import com.heckteck.birthy.ViewModels.BirthdayViewModel;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
@@ -34,7 +37,7 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BirthdayItemClickInterface {
 
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle drawerToggle;
@@ -94,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawer);
         navigationView = findViewById(R.id.navigation_view);
         toolbar = findViewById(R.id.addBirthdayToolbar);
+        birthdayViewModel = ViewModelProviders.of(this).get(BirthdayViewModel.class);
+
         searchView = findViewById(R.id.searchView);
         navigationView.setItemIconTintList(null);
         NavigationUI.setupWithNavController(navigationView, navController);
@@ -116,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        getMenuInflater().inflate(R.menu.search_menu, menu);
         MenuItem item = menu.findItem(R.id.menuBtn_search);
         searchView.setMenuItem(item);
 
@@ -125,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 observerSetUp();
                 birthdayAdapter.getFilter().filter(query);
-                searchView.closeSearch();
+                searchView.hideKeyboard(getWindow().getDecorView().getRootView());
                 return true;
             }
 
@@ -140,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
-
             }
 
             @Override
@@ -153,13 +157,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.menuBtn_sort) {
-            showSortDialog();
-        }
-        return true;
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//        if (item.getItemId() == R.id.menuBtn_sort) {
+//            showSortDialog();
+//        }
+//        return true;
+//    }
 
     private void observerSetUp() {
 
@@ -172,7 +176,8 @@ public class MainActivity extends AppCompatActivity {
                     recyclerView = findViewById(R.id.birthdayRecycler);
                     recyclerView.setHasFixedSize(true);
                     recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                    birthdayAdapter = new BirthdayAdapter(MainActivity.this, birthdayList);
+                    birthdayAdapter = new BirthdayAdapter(MainActivity.this, birthdayList, MainActivity.this);
+                    birthdayAdapter.setHasStableIds(true);
                     recyclerView.setAdapter(birthdayAdapter);
                     birthdayAdapter.notifyDataSetChanged();
                 } else {
@@ -186,11 +191,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void showSortDialog() {
-        Dialog sortDialog = new Dialog(this);
-        sortDialog.setContentView(R.layout.sort_dialog);
-        sortDialog.show();
-    }
 
     @Override
     public void onBackPressed() {
@@ -199,5 +199,15 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void onItemClick(int position) {
+
+    }
+
+    @Override
+    public void onItemLongClick(int position) {
+
     }
 }

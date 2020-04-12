@@ -15,7 +15,7 @@
         android:layout_marginBottom="8dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:background="@drawable/card_bg1"
+        android:background="@drawable/card_bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"

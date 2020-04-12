@@ -12,8 +12,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.bumptech.glide.Glide;
 import com.heckteck.birthy.DatabaseHelpers.Birthday;
 import com.heckteck.birthy.R;
+import com.heckteck.birthy.Utils.BirthdayItemClickInterface;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -36,11 +38,13 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
     private List<Birthday> birthdays;
     private List<Birthday> birthdaysFiltered;
     private Context context;
+    private BirthdayItemClickInterface birthdayItemClickInterface;
 
-    public BirthdayAdapter(Context context, List<Birthday> birthdays) {
+    public BirthdayAdapter(Context context, List<Birthday> birthdays, BirthdayItemClickInterface clickInterface) {
         this.context = context;
         this.birthdays = birthdays;
         this.birthdaysFiltered = birthdays;
+        this.birthdayItemClickInterface = clickInterface;
     }
 
     @NonNull
@@ -64,22 +68,30 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
         calculateCurrentAge(dateTime, dateTime2, holder.tv_turns);
 
         if (birthday.getUserImg().equals("null")) {
+//            Glide.with(context).load(R.raw.cake_placeholder).into(holder.profileImg);
             holder.profileImg.setAnimation(R.raw.cake_placeholder);
         } else {
             holder.circleProfile.setVisibility(View.VISIBLE);
             holder.profileImg.setVisibility(View.INVISIBLE);
-            holder.circleProfile.setImageURI(Uri.parse(birthday.getUserImg()));
+            Glide.with(context).load(Uri.parse(birthday.getUserImg())).into(holder.circleProfile);
+//            holder.circleProfile.setImageURI(Uri.parse(birthday.getUserImg()));
         }
 
-        if (position % 4 == 0) {
+        if (holder.getAdapterPosition() % 4 == 0) {
             holder.relativeLayout.setBackgroundResource(R.drawable.card_bg1);
-        } else if (position % 4 == 1) {
+        } else if (holder.getAdapterPosition() % 4 == 1) {
             holder.relativeLayout.setBackgroundResource(R.drawable.card_bg2);
-        } else if (position % 4 == 2) {
+        } else if (holder.getAdapterPosition() % 4 == 2) {
             holder.relativeLayout.setBackgroundResource(R.drawable.card_bg3);
-        } else if (position % 4 == 3) {
+        } else if (holder.getAdapterPosition() % 4 == 3) {
             holder.relativeLayout.setBackgroundResource(R.drawable.card_bg4);
         }
+    }
+
+    @Override
+    public long getItemId(int position) {
+        Birthday birthday = birthdaysFiltered.get(position);
+        return birthday.getId();
     }
 
     @Override
@@ -192,6 +204,21 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
             profileImg = itemView.findViewById(R.id.profileImg);
             circleProfile = itemView.findViewById(R.id.circleProfile);
             relativeLayout = itemView.findViewById(R.id.relativeLayout);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    birthdayItemClickInterface.onItemClick(getAdapterPosition());
+                }
+            });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    birthdayItemClickInterface.onItemLongClick(getAdapterPosition());
+                    return true;
+                }
+            });
 
         }
     }

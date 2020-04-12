@@ -24,6 +24,7 @@
             android:layout_marginBottom="16dp"/>
 
         <TextView
+            android:id="@+id/sortByBirthdayNewest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/sort_numeric_asc"
@@ -33,6 +34,7 @@
             android:textSize="20sp" />
 
         <TextView
+            android:id="@+id/sortByBirthdayOldest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -43,6 +45,7 @@
             android:textSize="20sp" />
 
         <TextView
+            android:id="@+id/sortByNameAZ"
             android:layout_marginTop="24dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -53,6 +56,7 @@
             android:textSize="20sp" />
 
         <TextView
+            android:id="@+id/sortByNameZA"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
