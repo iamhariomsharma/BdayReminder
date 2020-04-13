@@ -31,6 +31,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.heckteck.birthy.Adapters.BirthdayAdapter;
 import com.heckteck.birthy.DatabaseHelpers.Birthday;
 import com.heckteck.birthy.Notifications.NotificationReceiver;
 import com.heckteck.birthy.R;

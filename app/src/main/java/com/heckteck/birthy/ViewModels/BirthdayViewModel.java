@@ -46,4 +46,8 @@ public class BirthdayViewModel extends AndroidViewModel {
         return birthdaysByDateAsc;
     }
 
+    public void deleteBirthday(Birthday birthday){
+        birthdayRepository.deleteBirthday(birthday);
+    }
+
 }

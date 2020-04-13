@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/relativeLayout"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    android:elevation="20dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/card_bg"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+
+
+    <TextView
+        android:id="@id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/profileImg"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.043"
+        tools:text="Hariom Sharma" />
+
+    <TextView
+        android:id="@+id/tv_turns"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_name"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:textColor="@color/content_text_color"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/profileImg"
+        app:layout_constraintTop_toBottomOf="@+id/tv_name"
+        tools:text="Turns 20" />
+
+    <TextView
+        android:id="@+id/tv_birthDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_turns"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:textColor="@color/content_text_color"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/profileImg"
+        app:layout_constraintTop_toBottomOf="@+id/tv_turns"
+        tools:text="20 Jan, 2000" />
+
+    <TextView
+        android:id="@+id/tv_daysLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_name"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="20dp"
+        android:padding="10dp"
+        android:paddingTop="10dp"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/tv_timeline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="1" />
+
+    <TextView
+        android:id="@id/tv_timeline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_daysLeft"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="18dp"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_daysLeft"
+        tools:text="Days" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@id/profileImg"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="4dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/cake_placeholder" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/circleProfile"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="16dp"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/profileImg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileImg"
+        tools:srcCompat="@drawable/ic_userimg" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

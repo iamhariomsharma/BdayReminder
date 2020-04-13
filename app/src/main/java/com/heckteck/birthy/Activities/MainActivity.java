@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements BirthdayItemClick
     }
 
     @Override
-    public void onItemLongClick(int position) {
+    public void onItemLongClick(int position, View view) {
 
     }
 }

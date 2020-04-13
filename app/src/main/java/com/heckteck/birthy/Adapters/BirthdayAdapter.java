@@ -6,6 +6,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.RelativeLayout;
@@ -28,6 +29,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,7 +52,7 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
     @NonNull
     @Override
     public BirthdayHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_bday, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_birthday, parent, false);
         return new BirthdayHolder(view);
     }
 
@@ -69,7 +71,9 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
 
         if (birthday.getUserImg().equals("null")) {
 //            Glide.with(context).load(R.raw.cake_placeholder).into(holder.profileImg);
-            holder.profileImg.setAnimation(R.raw.cake_placeholder);
+            if (!holder.profileImg.isAnimating()) {
+                holder.profileImg.setAnimation(R.raw.cake_placeholder);
+            }
         } else {
             holder.circleProfile.setVisibility(View.VISIBLE);
             holder.profileImg.setVisibility(View.INVISIBLE);
@@ -77,15 +81,17 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
 //            holder.circleProfile.setImageURI(Uri.parse(birthday.getUserImg()));
         }
 
-        if (holder.getAdapterPosition() % 4 == 0) {
-            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg1);
-        } else if (holder.getAdapterPosition() % 4 == 1) {
-            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg2);
-        } else if (holder.getAdapterPosition() % 4 == 2) {
-            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg3);
-        } else if (holder.getAdapterPosition() % 4 == 3) {
-            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg4);
-        }
+        holder.relativeLayout.setAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_scale_animation));
+
+//        if (holder.getAdapterPosition() % 4 == 0) {
+//            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg1);
+//        } else if (holder.getAdapterPosition() % 4 == 1) {
+//            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg2);
+//        } else if (holder.getAdapterPosition() % 4 == 2) {
+//            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg3);
+//        } else if (holder.getAdapterPosition() % 4 == 3) {
+//            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg4);
+//        }
     }
 
     @Override
@@ -107,18 +113,32 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
             nextBirthday = birthdayDateTime.withYear(year + 1);
         }
         Period dateDifferencePeriod = displayBirthdayResult(nextBirthday, todayDateTime);
+        Period daysDifference = displayDaysResult(nextBirthday, todayDateTime);
+        int totalDaysLeft = daysDifference.getDays();
         int getDateInDays = dateDifferencePeriod.getDays();
         int getDateInMonths = dateDifferencePeriod.getMonths();
         int getDateInYears = dateDifferencePeriod.getYears();
 
-//      TODO: change days remaining on basis of time left
-        if (getDateInMonths < 1) {
-            daysRemaining.setText(Html.fromHtml("" + getDateInDays));
+        if (totalDaysLeft == 0) {
+            daysRemaining.setText("Today");
+        } else if (totalDaysLeft < 2) {
+            daysRemaining.setText("Tomorrow");
+        } else {
+            daysRemaining.setText(Html.fromHtml("" + totalDaysLeft));
             timeline.setText("Days");
-        } else if (getDateInYears < 1) {
-            daysRemaining.setText(Html.fromHtml("" + getDateInMonths));
-            timeline.setText("Months");
         }
+
+//        if (getDateInMonths < 1) {
+//            daysRemaining.setText(Html.fromHtml("" + getDateInDays));
+//            timeline.setText("Days");
+//        } else if (getDateInYears < 1) {
+//            daysRemaining.setText(Html.fromHtml("" + getDateInMonths));
+//            timeline.setText("Months");
+//        }
+    }
+
+    private Period displayDaysResult(DateTime nextBirthday, DateTime todayDateTime) {
+        return new Period(todayDateTime, nextBirthday, PeriodType.days());
     }
 
     private void calculateCurrentAge(DateTime dateToday, DateTime birthdayDate, TextView turns) {
@@ -191,9 +211,9 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
         TextView tv_timeline;
         LottieAnimationView profileImg;
         CircleImageView circleProfile;
-        RelativeLayout relativeLayout;
+        ConstraintLayout relativeLayout;
 
-        public BirthdayHolder(@NonNull View itemView) {
+        public BirthdayHolder(@NonNull final View itemView) {
             super(itemView);
 
             tv_name = itemView.findViewById(R.id.tv_name);
@@ -214,8 +234,8 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
 
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
-                public boolean onLongClick(View v) {
-                    birthdayItemClickInterface.onItemLongClick(getAdapterPosition());
+                public boolean onLongClick(View view) {
+                    birthdayItemClickInterface.onItemLongClick(getAdapterPosition(), itemView);
                     return true;
                 }
             });

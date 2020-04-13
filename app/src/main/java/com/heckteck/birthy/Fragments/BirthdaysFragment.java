@@ -7,12 +7,14 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,6 +26,7 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.heckteck.birthy.Activities.AddBirthdayActivity;
+import com.heckteck.birthy.Activities.BirthdayDetailActivity;
 import com.heckteck.birthy.Activities.MainActivity;
 import com.heckteck.birthy.Adapters.BirthdayAdapter;
 import com.heckteck.birthy.DatabaseHelpers.Birthday;
@@ -227,11 +230,30 @@ public class BirthdaysFragment extends Fragment implements BirthdayItemClickInte
 
     @Override
     public void onItemClick(int position) {
-        Toast.makeText(getActivity(), birthdayList.get(position).getName() +" Clicked", Toast.LENGTH_SHORT).show();
+        Intent detailIntent = new Intent(getActivity(), BirthdayDetailActivity.class);
+        Birthday birthday = birthdayList.get(position);
+        detailIntent.putExtra("birthdayDetail", birthday);
+        startActivity(detailIntent);
     }
 
     @Override
-    public void onItemLongClick(int position) {
-        Toast.makeText(getActivity(), birthdayList.get(position).getName() +" Long Clicked", Toast.LENGTH_SHORT).show();
+    public void onItemLongClick(final int position, View view) {
+        PopupMenu popupMenu = new PopupMenu(getActivity(), view);
+        popupMenu.inflate(R.menu.item_menu);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.popupEdit){
+                    Toast.makeText(getActivity(), "Edit " + birthdayList.get(position).getName(), Toast.LENGTH_SHORT).show();
+                }else if (item.getItemId() == R.id.popupDelete){
+                    birthdayViewModel.deleteBirthday(birthdayList.get(position));
+                    birthdayAdapter.notifyItemRemoved(position);
+                    Toast.makeText(getActivity(), birthdayList.get(position).getName() + " Deleted", Toast.LENGTH_SHORT).show();
+                }
+                return false;
+            }
+        });
+        popupMenu.setGravity(Gravity.END);
+        popupMenu.show();
     }
 }

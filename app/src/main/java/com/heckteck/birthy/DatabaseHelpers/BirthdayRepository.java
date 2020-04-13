@@ -16,7 +16,6 @@ public class BirthdayRepository {
     private LiveData<List<Birthday>> birthdaysByNameDesc;
     private LiveData<List<Birthday>> birthdaysByNameAsc;
     private LiveData<List<Birthday>> birthdayByDateAsc;
-    private MutableLiveData<List<Birthday>> birthdaysByOrder = new MutableLiveData<>();
 
     public BirthdayRepository(Application application) {
         BirthdayDatabase birthdayDatabase = BirthdayDatabase.getInstance(application);
@@ -29,6 +28,10 @@ public class BirthdayRepository {
 
     public void insert(Birthday birthday) {
         new InsertBirthdayAsyncTask(birthdayDao).execute(birthday);
+    }
+
+    public void deleteBirthday(Birthday birthday){
+        new DeleteBirthdayAsyncTask(birthdayDao).execute(birthday);
     }
 
     public LiveData<List<Birthday>> getAllBirthdays() {
@@ -59,6 +62,21 @@ public class BirthdayRepository {
         @Override
         protected Void doInBackground(Birthday... birthdays) {
             birthdayDao.insert(birthdays[0]);
+            return null;
+        }
+    }
+
+    private static class DeleteBirthdayAsyncTask extends AsyncTask<Birthday, Void, Void>{
+
+        private BirthdayDao birthdayDao;
+
+        DeleteBirthdayAsyncTask(BirthdayDao birthdayDao) {
+            this.birthdayDao = birthdayDao;
+        }
+
+        @Override
+        protected Void doInBackground(Birthday... birthdays) {
+            birthdayDao.deleteBirthday(birthdays[0]);
             return null;
         }
     }

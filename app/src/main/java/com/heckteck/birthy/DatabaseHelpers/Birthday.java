@@ -1,10 +1,13 @@
 package com.heckteck.birthy.DatabaseHelpers;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "birthdays_table")
-public class Birthday {
+public class Birthday implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -102,4 +105,45 @@ public class Birthday {
         this.currentDateTime = currentDateTime;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeString(this.name);
+        dest.writeString(this.birthDate);
+        dest.writeString(this.date);
+        dest.writeString(this.phoneNumber);
+        dest.writeString(this.notes);
+        dest.writeString(this.timeToWish);
+        dest.writeString(this.currentDateTime);
+        dest.writeString(this.userImg);
+    }
+
+    protected Birthday(Parcel in) {
+        this.id = in.readInt();
+        this.name = in.readString();
+        this.birthDate = in.readString();
+        this.date = in.readString();
+        this.phoneNumber = in.readString();
+        this.notes = in.readString();
+        this.timeToWish = in.readString();
+        this.currentDateTime = in.readString();
+        this.userImg = in.readString();
+    }
+
+    public static final Parcelable.Creator<Birthday> CREATOR = new Parcelable.Creator<Birthday>() {
+        @Override
+        public Birthday createFromParcel(Parcel source) {
+            return new Birthday(source);
+        }
+
+        @Override
+        public Birthday[] newArray(int size) {
+            return new Birthday[size];
+        }
+    };
 }

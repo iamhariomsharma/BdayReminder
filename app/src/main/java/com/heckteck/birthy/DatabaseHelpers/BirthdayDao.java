@@ -5,6 +5,7 @@ import java.util.List;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
@@ -26,6 +27,8 @@ public interface BirthdayDao {
     @Query("SELECT * FROM birthdays_table ORDER BY name ASC")
     LiveData<List<Birthday>> getBirthdayByNameAsc();
 
+    @Delete
+    void deleteBirthday(Birthday birthday);
 
 
 }
