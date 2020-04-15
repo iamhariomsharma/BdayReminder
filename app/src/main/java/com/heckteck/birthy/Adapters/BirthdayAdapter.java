@@ -1,6 +1,7 @@
 package com.heckteck.birthy.Adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -83,15 +85,15 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
 
         holder.relativeLayout.setAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_scale_animation));
 
-//        if (holder.getAdapterPosition() % 4 == 0) {
-//            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg1);
-//        } else if (holder.getAdapterPosition() % 4 == 1) {
-//            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg2);
-//        } else if (holder.getAdapterPosition() % 4 == 2) {
-//            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg3);
-//        } else if (holder.getAdapterPosition() % 4 == 3) {
-//            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg4);
-//        }
+        if (holder.getAdapterPosition() % 4 == 0) {
+            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg1);
+        } else if (holder.getAdapterPosition() % 4 == 1) {
+            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg2);
+        } else if (holder.getAdapterPosition() % 4 == 2) {
+            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg3);
+        } else if (holder.getAdapterPosition() % 4 == 3) {
+            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg4);
+        }
     }
 
     @Override
@@ -119,22 +121,47 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
         int getDateInMonths = dateDifferencePeriod.getMonths();
         int getDateInYears = dateDifferencePeriod.getYears();
 
-        if (totalDaysLeft == 0) {
-            daysRemaining.setText("Today");
-        } else if (totalDaysLeft < 2) {
-            daysRemaining.setText("Tomorrow");
-        } else {
-            daysRemaining.setText(Html.fromHtml("" + totalDaysLeft));
-            timeline.setText("Days");
-        }
-
-//        if (getDateInMonths < 1) {
-//            daysRemaining.setText(Html.fromHtml("" + getDateInDays));
+//        if (totalDaysLeft == 0) {
+//            daysRemaining.setText("Today");
+//        } else if (totalDaysLeft < 2) {
+//            daysRemaining.setText("Tomorrow");
+//        } else {
+//            daysRemaining.setText(Html.fromHtml("" + totalDaysLeft));
 //            timeline.setText("Days");
-//        } else if (getDateInYears < 1) {
-//            daysRemaining.setText(Html.fromHtml("" + getDateInMonths));
-//            timeline.setText("Months");
 //        }
+
+        if (getDateInMonths < 1) {
+            if (getDateInDays < 1) {
+                daysRemaining.setText("Today");
+                timeline.setVisibility(View.GONE);
+                daysRemaining.setBackgroundResource(R.drawable.ic_today_txt_bg);
+                daysRemaining.setTextColor(Color.WHITE);
+                daysRemaining.setPadding(20, 8, 20, 12);
+                ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) daysRemaining.getLayoutParams();
+                layoutParams.topMargin = 55;
+                layoutParams.rightMargin = 24;
+                daysRemaining.setLayoutParams(layoutParams);
+
+            }else if (getDateInDays < 2){
+                daysRemaining.setText("Tomorrow");
+                timeline.setVisibility(View.GONE);
+                daysRemaining.setBackgroundResource(R.drawable.ic_today_txt_bg);
+                daysRemaining.setTextColor(Color.WHITE);
+                daysRemaining.setPadding(16, 10, 16, 14);
+                daysRemaining.setTextSize(16);
+                ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) daysRemaining.getLayoutParams();
+                layoutParams.topMargin = 55;
+                layoutParams.rightMargin = 24;
+                daysRemaining.setLayoutParams(layoutParams);
+            } else{
+                daysRemaining.setText(Html.fromHtml("" + getDateInDays));
+                timeline.setText("Days");
+            }
+
+        } else if (getDateInYears < 1) {
+            daysRemaining.setText(Html.fromHtml("" + getDateInMonths));
+            timeline.setText("Months");
+        }
     }
 
     private Period displayDaysResult(DateTime nextBirthday, DateTime todayDateTime) {

@@ -7,6 +7,10 @@
     <color name="secondaryText">#757575</color>
     <color name="card_bg_color">#F6F6F4</color>
     <color name="content_text_color">#65676B</color>
-
     <color name="searchBarColor">#F6F8FA</color>
+
+    <color name="card1">#FFECE7</color>
+    <color name="card2">#F5F3FF</color>
+    <color name="card3">#FEEFD3</color>
+    <color name="card4">#E8FDF7</color>
 </resources>
