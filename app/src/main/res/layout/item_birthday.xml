@@ -17,17 +17,22 @@
 
     <TextView
         android:id="@id/tv_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/poppins_medium"
+        android:maxLines="1"
         android:textColor="@android:color/black"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tv_daysLeft"
         app:layout_constraintStart_toEndOf="@+id/profileImg"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.043"
-        tools:text="Hariom Sharma" />
+        tools:text="Hariom Sharma is my name" />
 
     <TextView
         android:id="@+id/tv_turns"
@@ -36,6 +41,7 @@
         android:layout_below="@+id/tv_name"
         android:layout_marginStart="8dp"
         android:layout_marginTop="2dp"
+        android:fontFamily="@font/poppins"
         android:textColor="@color/content_text_color"
         android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/profileImg"
@@ -49,6 +55,7 @@
         android:layout_below="@id/tv_turns"
         android:layout_marginStart="8dp"
         android:layout_marginTop="2dp"
+        android:fontFamily="@font/poppins"
         android:textColor="@color/content_text_color"
         android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/profileImg"
@@ -63,6 +70,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/ic_days_bg"
+        android:fontFamily="@font/poppins"
         android:paddingTop="6dp"
         android:textAlignment="center"
         android:textColor="@android:color/black"
@@ -78,6 +86,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tv_daysLeft"
         android:layout_alignParentEnd="true"
+        android:fontFamily="@font/poppins"
         android:textAlignment="center"
         android:textColor="@color/content_text_color"
         android:textSize="14sp"

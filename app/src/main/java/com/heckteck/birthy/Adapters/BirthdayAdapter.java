@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +65,16 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
         holder.tv_name.setText(birthday.getName());
         holder.tv_birthDate.setText(birthday.getBirthDate());
 
-        String currentDateTime = birthday.getCurrentDateTime();
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        int newMonth = month + 1;
+        String currentDateTime = day + "/" + newMonth + "/" + year;
+        Log.d("DATE", currentDateTime);
+
+//        String currentDateTime = birthday.getCurrentDateTime();
         String birthDate = birthday.getBirthDate();
         DateTime dateTime = convertToDateTime(currentDateTime);
         DateTime dateTime2 = convertToDateTime(birthDate);
