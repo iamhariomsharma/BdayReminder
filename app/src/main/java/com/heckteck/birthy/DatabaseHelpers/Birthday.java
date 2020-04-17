@@ -37,56 +37,12 @@ public class Birthday implements Parcelable {
         this.timeLeft = timeLeft;
     }
 
-    public Date getTimeLeft() {
-        return timeLeft;
-    }
-
-    public void setTimeLeft(Date timeLeft) {
-        this.timeLeft = timeLeft;
-    }
-
-    public static Creator<Birthday> getCREATOR() {
-        return CREATOR;
-    }
-
-    public int getDate() {
-        return date;
-    }
-
-    public void setDate(int date) {
-        this.date = date;
-    }
-
-    public String getUserImg() {
-        return userImg;
-    }
-
-    public void setUserImg(String userImg) {
-        this.userImg = userImg;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public String getTimeToWish() {
-        return timeToWish;
-    }
-
-    public void setTimeToWish(String timeToWish) {
-        this.timeToWish = timeToWish;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -105,12 +61,36 @@ public class Birthday implements Parcelable {
         this.birthDate = birthDate;
     }
 
+    public int getDate() {
+        return date;
+    }
+
+    public void setDate(int date) {
+        this.date = date;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public String getTimeToWish() {
+        return timeToWish;
+    }
+
+    public void setTimeToWish(String timeToWish) {
+        this.timeToWish = timeToWish;
     }
 
     public String getCurrentDateTime() {
@@ -120,6 +100,23 @@ public class Birthday implements Parcelable {
     public void setCurrentDateTime(String currentDateTime) {
         this.currentDateTime = currentDateTime;
     }
+
+    public String getUserImg() {
+        return userImg;
+    }
+
+    public void setUserImg(String userImg) {
+        this.userImg = userImg;
+    }
+
+    public Date getTimeLeft() {
+        return timeLeft;
+    }
+
+    public void setTimeLeft(Date timeLeft) {
+        this.timeLeft = timeLeft;
+    }
+
 
     @Override
     public int describeContents() {
@@ -137,6 +134,7 @@ public class Birthday implements Parcelable {
         dest.writeString(this.timeToWish);
         dest.writeString(this.currentDateTime);
         dest.writeString(this.userImg);
+        dest.writeLong(this.timeLeft != null ? this.timeLeft.getTime() : -1);
     }
 
     protected Birthday(Parcel in) {
@@ -149,9 +147,11 @@ public class Birthday implements Parcelable {
         this.timeToWish = in.readString();
         this.currentDateTime = in.readString();
         this.userImg = in.readString();
+        long tmpTimeLeft = in.readLong();
+        this.timeLeft = tmpTimeLeft == -1 ? null : new Date(tmpTimeLeft);
     }
 
-    public static final Parcelable.Creator<Birthday> CREATOR = new Parcelable.Creator<Birthday>() {
+    public static final Creator<Birthday> CREATOR = new Creator<Birthday>() {
         @Override
         public Birthday createFromParcel(Parcel source) {
             return new Birthday(source);

@@ -11,7 +11,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/wish_bg"
+        android:background="@color/primaryText"
         android:orientation="vertical"
         android:padding="10dp">
 
@@ -73,10 +73,10 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/edittext_bg"
                 android:text="Wish Now"
+                android:padding="16dp"
                 android:textAlignment="center"
                 android:textColor="@android:color/black"
-                android:textSize="28sp"
-                android:textStyle="bold" />
+                android:textSize="24sp" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

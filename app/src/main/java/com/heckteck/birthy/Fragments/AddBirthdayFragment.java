@@ -187,7 +187,7 @@ public class AddBirthdayFragment extends Fragment {
         int newMonth = month + 1;
         currentDateTime = day + "/" + newMonth + "/" + year;
         Log.d("DATE", currentDateTime);
-        Date timeLeft;
+
 
         DateTime currentDate = convertToDateTime(currentDateTime);
         DateTime nextBirthday = convertToDateTime(dob);
@@ -197,6 +197,7 @@ public class AddBirthdayFragment extends Fragment {
         }
         Period dateDifferencePeriod = displayBirthdayResult(nextBirthdayTime, currentDate);
         int daysLeft = dateDifferencePeriod.getDays();
+        Date birthDate = nextBirthdayTime.toDate();
 
         Birthday birthday = new Birthday("" + name,
                 "" + dob,
@@ -206,7 +207,7 @@ public class AddBirthdayFragment extends Fragment {
                 "" + timeToWish,
                 "" + currentDateTime,
                 "" + imgUri,
-                new Date());
+                birthDate);
 
         addBirthdayViewModel.insert(birthday);
         Toast.makeText(getActivity(), "Birthday Inserted successfully", Toast.LENGTH_SHORT).show();

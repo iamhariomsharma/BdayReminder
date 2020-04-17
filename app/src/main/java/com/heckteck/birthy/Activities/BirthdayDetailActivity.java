@@ -4,11 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProviders;
+import cn.iwgang.countdownview.CountdownView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -19,6 +21,8 @@ import com.heckteck.birthy.DatabaseHelpers.Birthday;
 import com.heckteck.birthy.R;
 import com.heckteck.birthy.ViewModels.BirthdayViewModel;
 
+import java.util.Date;
+
 public class BirthdayDetailActivity extends AppCompatActivity {
 
     private CircleImageView userProfile;
@@ -26,6 +30,7 @@ public class BirthdayDetailActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private BirthdayViewModel birthdayViewModel;
     private Birthday birthday;
+    private CountdownView countdownView;
 
 
     @Override
@@ -43,7 +48,9 @@ public class BirthdayDetailActivity extends AppCompatActivity {
 
         userProfile = findViewById(R.id.iv_userProfile);
         userName = findViewById(R.id.tv_username);
+        countdownView = findViewById(R.id.birthCountdown);
 
+        Date currentDate = new Date();
 
         Bundle bundle = getIntent().getExtras();
 
@@ -51,6 +58,7 @@ public class BirthdayDetailActivity extends AppCompatActivity {
             birthday = bundle.getParcelable("birthdayDetail");
             String name = birthday.getName();
             String imgUri = birthday.getUserImg();
+            Date birthDate = birthday.getTimeLeft();
 
             if (imgUri.equals("null")) {
                 userProfile.setImageResource(R.drawable.ic_userimg);
@@ -58,6 +66,13 @@ public class BirthdayDetailActivity extends AppCompatActivity {
                 userProfile.setImageURI(Uri.parse(imgUri));
             }
             userName.setText(name);
+
+            long currentDateTime = currentDate.getTime();
+            long birthDateTime = birthDate.getTime();
+            long countDownToBirthday = birthDateTime - currentDateTime;
+
+            countdownView.start(countDownToBirthday);
+
         }
     }
 
