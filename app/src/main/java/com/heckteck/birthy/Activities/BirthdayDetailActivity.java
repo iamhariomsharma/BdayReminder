@@ -1,28 +1,96 @@
 package com.heckteck.birthy.Activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProviders;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.heckteck.birthy.DatabaseHelpers.Birthday;
 import com.heckteck.birthy.R;
+import com.heckteck.birthy.ViewModels.BirthdayViewModel;
 
 public class BirthdayDetailActivity extends AppCompatActivity {
 
+    private CircleImageView userProfile;
+    private TextView userName;
+    private Toolbar toolbar;
+    private BirthdayViewModel birthdayViewModel;
+    private Birthday birthday;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_birthday_detail);
 
-        TextView tv_test = findViewById(R.id.tv_test);
+        toolbar = findViewById(R.id.detailToolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        birthdayViewModel = ViewModelProviders.of(this).get(BirthdayViewModel.class);
+
+        userProfile = findViewById(R.id.iv_userProfile);
+        userName = findViewById(R.id.tv_username);
+
 
         Bundle bundle = getIntent().getExtras();
 
         if (bundle != null) {
-            Birthday birthday = bundle.getParcelable("birthdayDetail");
-            tv_test.setText(String.format("%s\n%s\n%s", birthday.getName(), birthday.getBirthDate(), birthday.getTimeToWish()));
+            birthday = bundle.getParcelable("birthdayDetail");
+            String name = birthday.getName();
+            String imgUri = birthday.getUserImg();
+
+            if (imgUri.equals("null")) {
+                userProfile.setImageResource(R.drawable.ic_userimg);
+            } else {
+                userProfile.setImageURI(Uri.parse(imgUri));
+            }
+            userName.setText(name);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.birthday_detail_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_editBtn:
+                startEditActivity();
+                break;
+
+            case R.id.menu_deleteBtn:
+                birthdayViewModel.deleteBirthday(birthday);
+                Toast.makeText(this, "Birthday Deleted", Toast.LENGTH_SHORT).show();
+                finish();
+                break;
+        }
+        return true;
+    }
+
+    private void startEditActivity() {
+        Intent editIntent = new Intent(BirthdayDetailActivity.this, AddBirthdayActivity.class);
+        startActivity(editIntent);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return super.onSupportNavigateUp();
     }
 }
