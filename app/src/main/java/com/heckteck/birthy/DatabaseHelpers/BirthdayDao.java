@@ -15,10 +15,10 @@ public interface BirthdayDao {
     @Insert
     void insert(Birthday birthday);
 
-    @Query("SELECT * FROM birthdays_table ORDER BY date DESC")
+    @Query("SELECT * FROM birthdays_table ORDER BY date ASC")
     LiveData<List<Birthday>> getAllBirthdays();
 
-    @Query("SELECT * FROM birthdays_table ORDER BY date ASC")
+    @Query("SELECT * FROM birthdays_table ORDER BY date DESC")
     LiveData<List<Birthday>> getBirthdayByDateAsc();
 
     @Query("SELECT * FROM birthdays_table ORDER BY name DESC")

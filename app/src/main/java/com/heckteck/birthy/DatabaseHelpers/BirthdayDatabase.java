@@ -2,11 +2,16 @@ package com.heckteck.birthy.DatabaseHelpers;
 
 import android.content.Context;
 
+import com.heckteck.birthy.Utils.DateConverter;
+
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverter;
+import androidx.room.TypeConverters;
 
-@Database(entities = {Birthday.class}, version = 2)
+@Database(entities = {Birthday.class}, version = 3)
+@TypeConverters(DateConverter.class)
 public abstract class BirthdayDatabase extends RoomDatabase {
 
     private static BirthdayDatabase instance;

@@ -3,6 +3,8 @@ package com.heckteck.birthy.DatabaseHelpers;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Date;
+
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -14,15 +16,16 @@ public class Birthday implements Parcelable {
 
     private String name;
     private String birthDate;
-    private String date;
+    private int date;
     private String phoneNumber;
     private String notes;
     private String timeToWish;
     private String currentDateTime;
     private String userImg;
+    private Date timeLeft;
 
 
-    public Birthday(String name, String birthDate, String date, String phoneNumber, String notes, String timeToWish, String currentDateTime, String userImg) {
+    public Birthday(String name, String birthDate, int date, String phoneNumber, String notes, String timeToWish, String currentDateTime, String userImg, Date timeLeft) {
         this.name = name;
         this.birthDate = birthDate;
         this.date = date;
@@ -31,13 +34,26 @@ public class Birthday implements Parcelable {
         this.timeToWish = timeToWish;
         this.currentDateTime = currentDateTime;
         this.userImg = userImg;
+        this.timeLeft = timeLeft;
     }
 
-    public String getDate() {
+    public Date getTimeLeft() {
+        return timeLeft;
+    }
+
+    public void setTimeLeft(Date timeLeft) {
+        this.timeLeft = timeLeft;
+    }
+
+    public static Creator<Birthday> getCREATOR() {
+        return CREATOR;
+    }
+
+    public int getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(int date) {
         this.date = date;
     }
 
@@ -115,7 +131,7 @@ public class Birthday implements Parcelable {
         dest.writeInt(this.id);
         dest.writeString(this.name);
         dest.writeString(this.birthDate);
-        dest.writeString(this.date);
+        dest.writeInt(this.date);
         dest.writeString(this.phoneNumber);
         dest.writeString(this.notes);
         dest.writeString(this.timeToWish);
@@ -127,7 +143,7 @@ public class Birthday implements Parcelable {
         this.id = in.readInt();
         this.name = in.readString();
         this.birthDate = in.readString();
-        this.date = in.readString();
+        this.date = in.readInt();
         this.phoneNumber = in.readString();
         this.notes = in.readString();
         this.timeToWish = in.readString();

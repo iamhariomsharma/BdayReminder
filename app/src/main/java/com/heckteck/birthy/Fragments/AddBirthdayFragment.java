@@ -7,16 +7,13 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.ContactsContract;
-import android.provider.MediaStore;
 import android.telephony.PhoneNumberUtils;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -31,17 +28,20 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.heckteck.birthy.Adapters.BirthdayAdapter;
 import com.heckteck.birthy.DatabaseHelpers.Birthday;
 import com.heckteck.birthy.Notifications.NotificationReceiver;
 import com.heckteck.birthy.R;
 import com.heckteck.birthy.ViewModels.AddBirthdayViewModel;
 import com.yalantis.ucrop.UCrop;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
+import org.joda.time.Period;
+import org.joda.time.PeriodType;
 
 import java.io.File;
-import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -49,8 +49,6 @@ import java.util.Random;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -78,7 +76,7 @@ public class AddBirthdayFragment extends Fragment {
     private AddBirthdayViewModel addBirthdayViewModel;
     private ImageButton btn_attachContact;
     int year, day, hour, minute, month;
-//    BirthdayAdapter birthdayAdapter = new BirthdayAdapter();
+    //    BirthdayAdapter birthdayAdapter = new BirthdayAdapter();
     private final String SAMPLE_CROPPED_IMG_NAME = "SampleCropImg";
 
     Calendar now = Calendar.getInstance();
@@ -181,8 +179,6 @@ public class AddBirthdayFragment extends Fragment {
         dob = et_dob.getText().toString().trim();
         timeToWish = et_timePicker.getText().toString().trim();
 
-        long dateTime = convertToDateTime(dob);
-
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
@@ -191,15 +187,26 @@ public class AddBirthdayFragment extends Fragment {
         int newMonth = month + 1;
         currentDateTime = day + "/" + newMonth + "/" + year;
         Log.d("DATE", currentDateTime);
+        Date timeLeft;
+
+        DateTime currentDate = convertToDateTime(currentDateTime);
+        DateTime nextBirthday = convertToDateTime(dob);
+        DateTime nextBirthdayTime = nextBirthday.withYear(year);
+        if (nextBirthdayTime.isBefore(currentDate) || nextBirthdayTime == currentDate) {
+            nextBirthdayTime = nextBirthday.withYear(year + 1);
+        }
+        Period dateDifferencePeriod = displayBirthdayResult(nextBirthdayTime, currentDate);
+        int daysLeft = dateDifferencePeriod.getDays();
 
         Birthday birthday = new Birthday("" + name,
                 "" + dob,
-                "" + dateTime,
+                daysLeft,
                 "" + phone,
                 "" + notes,
                 "" + timeToWish,
                 "" + currentDateTime,
-                "" + imgUri);
+                "" + imgUri,
+                new Date());
 
         addBirthdayViewModel.insert(birthday);
         Toast.makeText(getActivity(), "Birthday Inserted successfully", Toast.LENGTH_SHORT).show();
@@ -209,17 +216,21 @@ public class AddBirthdayFragment extends Fragment {
 
     }
 
-    private long convertToDateTime(String stringToConvert) {
+    private DateTime convertToDateTime(String stringToConvert) {
         String[] newStringArray = convertStingToArray(stringToConvert);
         int year = Integer.parseInt(newStringArray[2].trim());
         int month = Integer.parseInt(newStringArray[1].trim());
         int day = Integer.parseInt(newStringArray[0].trim());
         LocalDate mLocalDate = new LocalDate(year, month, day);
-        return mLocalDate.toDate().getTime();
+        return mLocalDate.toDateTime(LocalTime.fromDateFields(mLocalDate.toDate()));
     }
 
     private String[] convertStingToArray(String stringToConvert) {
         return stringToConvert.split("/");
+    }
+
+    private Period displayBirthdayResult(DateTime dateToday, DateTime birthdayDate) {
+        return new Period(birthdayDate, dateToday, PeriodType.days());
     }
 
     private void startAlarm() {
@@ -232,7 +243,7 @@ public class AddBirthdayFragment extends Fragment {
         now.set(Calendar.MINUTE, minute);
         now.set(Calendar.SECOND, 0);
 
-        if (now.before(Calendar.getInstance())){
+        if (now.before(Calendar.getInstance())) {
             now.add(Calendar.YEAR, 1);
         }
 
@@ -364,7 +375,7 @@ public class AddBirthdayFragment extends Fragment {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     imgUri = data.getData();
 //                    userImg.setImageURI(imgUri);
-                    if (imgUri != null){
+                    if (imgUri != null) {
                         startCrop(imgUri);
                     }
                 }
@@ -400,10 +411,10 @@ public class AddBirthdayFragment extends Fragment {
                 break;
 
             case UCrop.REQUEST_CROP:
-                if (resultCode == Activity.RESULT_OK){
+                if (resultCode == Activity.RESULT_OK) {
                     Uri cropImgUri = UCrop.getOutput(data);
 
-                    if (cropImgUri != null){
+                    if (cropImgUri != null) {
                         userImg.setImageURI(cropImgUri);
                     }
                 }
@@ -412,18 +423,17 @@ public class AddBirthdayFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void startCrop(Uri uri){
+    private void startCrop(Uri uri) {
         String destinationFileName = SAMPLE_CROPPED_IMG_NAME;
         destinationFileName += ".jpg";
         Uri destinationUri = Uri.fromFile(new File(getActivity().getCacheDir(), destinationFileName));
 
         int random = new Random().nextInt();
         String destURI = null;
-        if(destinationUri.toString().contains("jpg")) {
+        if (destinationUri.toString().contains("jpg")) {
             String str = random + ".jpg";
             destURI = destinationUri.toString().replace(".jpg", str);
-        }
-        else if(destinationUri.toString().contains("png")) {
+        } else if (destinationUri.toString().contains("png")) {
             String str = random + ".png";
             destURI = destinationUri.toString().replace(".png", str);
         }
@@ -436,7 +446,7 @@ public class AddBirthdayFragment extends Fragment {
         uCrop.start(getContext(), this);
     }
 
-    private UCrop.Options getCropOptions(){
+    private UCrop.Options getCropOptions() {
         UCrop.Options options = new UCrop.Options();
         options.setCompressionQuality(50);
         options.setHideBottomControls(false);

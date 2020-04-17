@@ -141,7 +141,7 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
 //        }
 
         if (getDateInMonths < 1) {
-            if (getDateInDays < 1) {
+            if (getDateInDays <= 0) {
                 daysRemaining.setText("Today");
                 timeline.setVisibility(View.GONE);
                 daysRemaining.setBackgroundResource(R.drawable.ic_today_txt_bg);
@@ -152,7 +152,7 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
                 layoutParams.rightMargin = 24;
                 daysRemaining.setLayoutParams(layoutParams);
 
-            }else if (getDateInDays < 2){
+            } else if (getDateInDays < 2) {
                 daysRemaining.setText("Tomorrow");
                 timeline.setVisibility(View.GONE);
                 daysRemaining.setBackgroundResource(R.drawable.ic_today_txt_bg);
@@ -163,14 +163,19 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
                 layoutParams.topMargin = 55;
                 layoutParams.rightMargin = 24;
                 daysRemaining.setLayoutParams(layoutParams);
-            } else{
+            } else {
                 daysRemaining.setText(Html.fromHtml("" + getDateInDays));
                 timeline.setText("Days");
             }
 
         } else if (getDateInYears < 1) {
-            daysRemaining.setText(Html.fromHtml("" + getDateInMonths));
-            timeline.setText("Months");
+            if (getDateInMonths == 1) {
+                daysRemaining.setText(Html.fromHtml("" + getDateInMonths));
+                timeline.setText("Month");
+            } else {
+                daysRemaining.setText(Html.fromHtml("" + getDateInMonths));
+                timeline.setText("Months");
+            }
         }
     }
 
