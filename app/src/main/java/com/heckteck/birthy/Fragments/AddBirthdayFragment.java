@@ -22,9 +22,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -41,8 +42,6 @@ import org.joda.time.Period;
 import org.joda.time.PeriodType;
 
 import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
@@ -56,28 +55,25 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AddBirthdayFragment extends Fragment {
 
-    private static final int CAMERA_REQUEST_CODE = 100;
     private static final int CONTACTS_REQUEST_CODE = 104;
     private static final int CONTACT_PIKE_CODE = 105;
     private static final int DATE_PICKER_FRAGMENT_NO_YEAR = 2;
     private static final int DATE_PICKER_FRAGMENT_YEAR = 1;
-    private static final int IMAGE_PIC_CAMERA_CODE = 102;
     private static final int IMAGE_PIC_GALLERY_CODE = 103;
     private static final int STORAGE_REQUEST_CODE = 101;
     private static final int TIME_PICKER_FRAGMENT = 3;
 
     private CircleImageView userImg;
     private EditText et_name, et_dob, et_phone, et_notes, et_timePicker;
-    private CheckBox isKnowYear;
+    private CheckBox cb_isKnowYear;
     private FloatingActionButton fab_done;
     private Uri imgUri;
-    private String currentPhotoPath;
     private String name, dob, phone, notes, timeToWish, currentDateTime;
     private AddBirthdayViewModel addBirthdayViewModel;
-    private ImageButton btn_attachContact;
-    int year, day, hour, minute, month;
-    //    BirthdayAdapter birthdayAdapter = new BirthdayAdapter();
+    private Button btn_attachContact;
+    int day, hour, minute, month;
     private final String SAMPLE_CROPPED_IMG_NAME = "SampleCropImg";
+    private boolean isYearKnow = false;
 
     Calendar now = Calendar.getInstance();
 
@@ -99,7 +95,7 @@ public class AddBirthdayFragment extends Fragment {
         et_notes = view.findViewById(R.id.et_notes);
         et_timePicker = view.findViewById(R.id.et_timePicker);
         fab_done = view.findViewById(R.id.fab_addData);
-        isKnowYear = view.findViewById(R.id.checkKnowYear);
+        cb_isKnowYear = view.findViewById(R.id.checkKnowYear);
         btn_attachContact = view.findViewById(R.id.attachContact);
 
         addBirthdayViewModel = ViewModelProviders.of(getActivity()).get(AddBirthdayViewModel.class);
@@ -108,13 +104,20 @@ public class AddBirthdayFragment extends Fragment {
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
 
-        CharSequence formatedTime = DateFormat.format("hh:mm a", calendar);
-        et_timePicker.setText(formatedTime);
+        CharSequence formattedTime = DateFormat.format("hh:mm a", calendar);
+        et_timePicker.setText(formattedTime);
 
         userImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 askGalleryPermissions();
+            }
+        });
+
+        cb_isKnowYear.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                isYearKnow = !isChecked;
             }
         });
 
@@ -126,7 +129,7 @@ public class AddBirthdayFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                if (isKnowYear.isChecked()) {
+                if (cb_isKnowYear.isChecked()) {
                     DatePickerFragment datePickerDialog = new DatePickerFragment();
                     datePickerDialog.setTargetFragment(AddBirthdayFragment.this, DATE_PICKER_FRAGMENT_NO_YEAR);
                     datePickerDialog.show(getFragmentManager(), "BIRTHDAY NO YEAR");
@@ -198,6 +201,7 @@ public class AddBirthdayFragment extends Fragment {
         Period dateDifferencePeriod = displayBirthdayResult(nextBirthdayTime, currentDate);
         int daysLeft = dateDifferencePeriod.getDays();
         Date birthDate = nextBirthdayTime.toDate();
+        Date realBirthdayDate = nextBirthday.toDate();
 
         Birthday birthday = new Birthday("" + name,
                 "" + dob,
@@ -207,7 +211,9 @@ public class AddBirthdayFragment extends Fragment {
                 "" + timeToWish,
                 "" + currentDateTime,
                 "" + imgUri,
-                birthDate);
+                birthDate,
+                realBirthdayDate,
+                isYearKnow);
 
         addBirthdayViewModel.insert(birthday);
         Toast.makeText(getActivity(), "Birthday Inserted successfully", Toast.LENGTH_SHORT).show();
@@ -267,24 +273,6 @@ public class AddBirthdayFragment extends Fragment {
     }
 
 
-//    private void showImagePickerDialog() {
-//        String[] options = {"Camera", "Gallery"};
-//
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//        builder.setTitle("Pick Image From");
-//        builder.setItems(options, new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                if (which == 0) {
-//                    askCameraPermissions();
-//                } else if (which == 1) {
-//                    askGalleryPermissions();
-//                }
-//            }
-//        });
-//        builder.create().show();
-//    }
-
     private void askGalleryPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (getActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
@@ -297,17 +285,6 @@ public class AddBirthdayFragment extends Fragment {
         }
     }
 
-//    private void askCameraPermissions() {
-//        if (Build.VERSION.SDK_INT >= 23) {
-//            if (getActivity().checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
-//                requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
-//            } else {
-//                dispatchTakePictureIntent();
-//            }
-//        } else {
-//            dispatchTakePictureIntent();
-//        }
-//    }
 
     private void askContactsPermission() {
         if (Build.VERSION.SDK_INT >= 23) {
@@ -324,7 +301,6 @@ public class AddBirthdayFragment extends Fragment {
 
     private void pickImageFromGallery() {
         Intent galleryIntent = new Intent();
-//        galleryIntent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         galleryIntent.setType("image/*");
         galleryIntent.setAction(Intent.ACTION_PICK);
         startActivityForResult(Intent.createChooser(galleryIntent, "Select Picture"), IMAGE_PIC_GALLERY_CODE);
@@ -361,17 +337,6 @@ public class AddBirthdayFragment extends Fragment {
                 }
                 break;
 
-//            case IMAGE_PIC_CAMERA_CODE:
-//                if (resultCode == Activity.RESULT_OK) {
-//                    File file = new File(currentPhotoPath);
-//                    imgUri = Uri.fromFile(file);
-////                    userImg.setImageURI(imgUri);
-//                    if (imgUri != null){
-//                        startCrop(imgUri);
-//                    }
-//                }
-//                break;
-
             case IMAGE_PIC_GALLERY_CODE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     imgUri = data.getData();
@@ -389,6 +354,7 @@ public class AddBirthdayFragment extends Fragment {
                     month = bundle.getInt("MONTH", 0);
                     day = bundle.getInt("DAY", 0);
                     et_dob.setText(resultDate);
+                    isYearKnow = true;
                 }
                 break;
 
@@ -398,6 +364,7 @@ public class AddBirthdayFragment extends Fragment {
                     String showDob = bundle.getString("SHOW_DOB", "error");
                     et_dob.setText(showDob);
                     dob = bundle.getString("RETURNED_DATE_NO_YEAR", "error");
+                    isYearKnow = false;
                 }
                 break;
 
@@ -460,15 +427,6 @@ public class AddBirthdayFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
         switch (requestCode) {
-//            case CAMERA_REQUEST_CODE: {
-//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                    dispatchTakePictureIntent();
-//                } else {
-//                    Toast.makeText(getActivity(), "Camera Permission is required to Use Camera", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//            break;
-
             case STORAGE_REQUEST_CODE: {
                 if (grantResults.length > 0) {
                     boolean storageAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
@@ -491,124 +449,6 @@ public class AddBirthdayFragment extends Fragment {
             break;
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-
-//    private File createImageFile() throws IOException {
-//        // Create an image file name
-//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-//        String imageFileName = "JPEG_" + timeStamp + "_";
-//        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-//        File image = File.createTempFile(
-//                imageFileName,  /* prefix */
-//                ".jpg",         /* suffix */
-//                storageDir      /* directory */
-//        );
-//
-//        // Save a file: path for use with ACTION_VIEW intents
-//        currentPhotoPath = image.getAbsolutePath();
-//        return image;
-//    }
-
-
-//    private void dispatchTakePictureIntent() {
-//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        // Ensure that there's a camera activity to handle the intent
-//        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-//            // Create the File where the photo should go
-//            File photoFile = null;
-//            try {
-//                photoFile = createImageFile();
-//            } catch (IOException ex) {
-//                // Error occurred while creating the File
-//            }
-//            // Continue only if the File was successfully created
-//            if (photoFile != null) {
-//                Uri photoURI = FileProvider.getUriForFile(getActivity(),
-//                        "com.heckteck.birthy.fileprovider",
-//                        photoFile);
-//                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-//                startActivityForResult(takePictureIntent, IMAGE_PIC_CAMERA_CODE);
-//            }
-//        }
-//    }
-
-    private String getZodiacSign(int paramInt1, int paramInt2) {
-        String str = "";
-        if (paramInt2 == 0) {
-            if (paramInt1 < 20) {
-                str = "Capricorn";
-            } else {
-                str = "Aquarius";
-            }
-        } else if (paramInt2 == 1) {
-            if (paramInt1 < 20) {
-                str = "Aquarius";
-            } else {
-                str = "Pisces";
-            }
-        } else if (paramInt2 == 2) {
-            if (paramInt1 < 20) {
-                str = "Pisces";
-            } else {
-                str = "Aries";
-            }
-        } else if (paramInt2 == 3) {
-            if (paramInt1 < 20) {
-                str = "Aries";
-            } else {
-                str = "Taurus";
-            }
-        } else if (paramInt2 == 4) {
-            if (paramInt1 < 20) {
-                str = "Taurus";
-            } else {
-                str = "Gemini";
-            }
-        } else if (paramInt2 == 5) {
-            if (paramInt1 < 20) {
-                str = "Gemini";
-            } else {
-                str = "Cancer";
-            }
-        } else if (paramInt2 == 6) {
-            if (paramInt1 < 20) {
-                str = "Cancer";
-            } else {
-                str = "Leo";
-            }
-        } else if (paramInt2 == 7) {
-            if (paramInt1 < 20) {
-                str = "Leo";
-            } else {
-                str = "Virgo";
-            }
-        } else if (paramInt2 == 8) {
-            if (paramInt1 < 20) {
-                str = "Virgo";
-            } else {
-                str = "Libra";
-            }
-        } else if (paramInt2 == 9) {
-            if (paramInt1 < 20) {
-                str = "Libra";
-            } else {
-                str = "Scorpio";
-            }
-        } else if (paramInt2 == 10) {
-            if (paramInt1 < 20) {
-                str = "Scorpio";
-            } else {
-                str = "Sagittarius";
-            }
-        } else if (paramInt2 == 11) {
-            if (paramInt1 < 20) {
-                str = "Sagittarius";
-            } else {
-                str = "Capricorn";
-            }
-        }
-        return str;
     }
 
 }

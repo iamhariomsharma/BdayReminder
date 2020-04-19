@@ -27,8 +27,10 @@ import org.joda.time.LocalTime;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -63,7 +65,6 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
     public void onBindViewHolder(@NonNull BirthdayHolder holder, int position) {
         Birthday birthday = birthdaysFiltered.get(position);
         holder.tv_name.setText(birthday.getName());
-        holder.tv_birthDate.setText(birthday.getBirthDate());
 
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -80,6 +81,21 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
         DateTime dateTime2 = convertToDateTime(birthDate);
         calculateNextBirthday(dateTime, dateTime2, holder.timeRemaining, holder.tv_timeline);
         calculateCurrentAge(dateTime, dateTime2, holder.tv_turns);
+
+        Date dateToShow = dateTime2.toDate();
+
+        if (birthday.isYearKnow()) {
+            SimpleDateFormat format = new SimpleDateFormat("dd MMM, yyyy");
+            String birthdayToShow = format.format(dateToShow);
+            holder.tv_birthDate.setText(birthdayToShow);
+        } else {
+            SimpleDateFormat format = new SimpleDateFormat("dd MMM");
+            String birthdayToShow = format.format(dateToShow);
+            holder.tv_birthDate.setText(birthdayToShow);
+            holder.tv_turns.setVisibility(View.GONE);
+            holder.tv_name.setPadding(0, 16, 0, 0);
+        }
+
 
         if (birthday.getUserImg().equals("null")) {
 //            Glide.with(context).load(R.raw.cake_placeholder).into(holder.profileImg);
@@ -146,7 +162,8 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
                 timeline.setVisibility(View.GONE);
                 daysRemaining.setBackgroundResource(R.drawable.ic_today_txt_bg);
                 daysRemaining.setTextColor(Color.WHITE);
-                daysRemaining.setPadding(20, 8, 20, 12);
+                daysRemaining.setTextSize(18);
+                daysRemaining.setPadding(20, 8, 20, 10);
                 ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) daysRemaining.getLayoutParams();
                 layoutParams.topMargin = 55;
                 layoutParams.rightMargin = 24;
@@ -155,17 +172,23 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
             } else if (getDateInDays < 2) {
                 daysRemaining.setText("Tomorrow");
                 timeline.setVisibility(View.GONE);
-                daysRemaining.setBackgroundResource(R.drawable.ic_today_txt_bg);
+                daysRemaining.setBackgroundResource(R.drawable.ic_tomorrow_txt_bg);
                 daysRemaining.setTextColor(Color.WHITE);
-                daysRemaining.setPadding(16, 10, 16, 14);
+                daysRemaining.setPadding(16, 10, 16, 13);
                 daysRemaining.setTextSize(16);
                 ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) daysRemaining.getLayoutParams();
                 layoutParams.topMargin = 55;
                 layoutParams.rightMargin = 24;
                 daysRemaining.setLayoutParams(layoutParams);
             } else {
-                daysRemaining.setText(Html.fromHtml("" + getDateInDays));
-                timeline.setText("Days");
+                int days = getDateInDays - 1;
+                if (days == 1) {
+                    daysRemaining.setText(Html.fromHtml("" + days));
+                    timeline.setText("Day");
+                } else {
+                    daysRemaining.setText(Html.fromHtml("" + days));
+                    timeline.setText("Days");
+                }
             }
 
         } else if (getDateInYears < 1) {

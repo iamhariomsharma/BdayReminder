@@ -17,7 +17,6 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:id="@+id/addBirthdayToolbar"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             app:popupTheme="@style/Theme.AppCompat.Light"
             android:background="@color/colorPrimary"/>
 

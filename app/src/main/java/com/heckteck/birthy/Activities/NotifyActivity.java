@@ -48,6 +48,7 @@ public class NotifyActivity extends Activity {
                 intent.putExtra("SEND_DIALOG", "sendWishesDialog");
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                finish();
             }
         });
         wishDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -64,8 +65,8 @@ public class NotifyActivity extends Activity {
         super.onDestroy();
     }
 
-    public boolean onTouchEvent(MotionEvent motionEvent) {
-        finish();
-        return super.onTouchEvent(motionEvent);
-    }
+//    public boolean onTouchEvent(MotionEvent motionEvent) {
+//        finish();
+//        return super.onTouchEvent(motionEvent);
+//    }
 }

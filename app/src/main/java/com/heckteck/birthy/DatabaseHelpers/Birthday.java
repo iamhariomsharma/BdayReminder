@@ -23,9 +23,11 @@ public class Birthday implements Parcelable {
     private String currentDateTime;
     private String userImg;
     private Date timeLeft;
+    private Date realBirthDate;
+    private boolean isYearKnow;
 
 
-    public Birthday(String name, String birthDate, int date, String phoneNumber, String notes, String timeToWish, String currentDateTime, String userImg, Date timeLeft) {
+    public Birthday(String name, String birthDate, int date, String phoneNumber, String notes, String timeToWish, String currentDateTime, String userImg, Date timeLeft, Date realBirthDate, boolean isYearKnow) {
         this.name = name;
         this.birthDate = birthDate;
         this.date = date;
@@ -35,14 +37,16 @@ public class Birthday implements Parcelable {
         this.currentDateTime = currentDateTime;
         this.userImg = userImg;
         this.timeLeft = timeLeft;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+        this.realBirthDate = realBirthDate;
+        this.isYearKnow = isYearKnow;
     }
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -117,6 +121,22 @@ public class Birthday implements Parcelable {
         this.timeLeft = timeLeft;
     }
 
+    public Date getRealBirthDate() {
+        return realBirthDate;
+    }
+
+    public void setRealBirthDate(Date realBirthDate) {
+        this.realBirthDate = realBirthDate;
+    }
+
+    public boolean isYearKnow() {
+        return isYearKnow;
+    }
+
+    public void setYearKnow(boolean yearKnow) {
+        isYearKnow = yearKnow;
+    }
+
 
     @Override
     public int describeContents() {
@@ -135,6 +155,8 @@ public class Birthday implements Parcelable {
         dest.writeString(this.currentDateTime);
         dest.writeString(this.userImg);
         dest.writeLong(this.timeLeft != null ? this.timeLeft.getTime() : -1);
+        dest.writeLong(this.realBirthDate != null ? this.realBirthDate.getTime() : -1);
+        dest.writeByte(this.isYearKnow ? (byte) 1 : (byte) 0);
     }
 
     protected Birthday(Parcel in) {
@@ -149,6 +171,9 @@ public class Birthday implements Parcelable {
         this.userImg = in.readString();
         long tmpTimeLeft = in.readLong();
         this.timeLeft = tmpTimeLeft == -1 ? null : new Date(tmpTimeLeft);
+        long tmpRealBirthDate = in.readLong();
+        this.realBirthDate = tmpRealBirthDate == -1 ? null : new Date(tmpRealBirthDate);
+        this.isYearKnow = in.readByte() != 0;
     }
 
     public static final Creator<Birthday> CREATOR = new Creator<Birthday>() {
