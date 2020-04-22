@@ -3,6 +3,7 @@ package com.heckteck.birthy.Activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.ViewModelProviders;
 import cn.iwgang.countdownview.CountdownView;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -11,6 +12,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class BirthdayDetailActivity extends AppCompatActivity {
 
     private CircleImageView userProfile;
-    private TextView userName, tv_birthDate, tv_daysLeft, tv_turnedAge, tv_notes;
+    private TextView userName, tv_birthDate, tv_daysLeft, tv_turnedAge, tv_notes, tv_turntxt;
     Toolbar toolbar;
     private BirthdayViewModel birthdayViewModel;
     private Birthday birthday;
@@ -65,6 +67,7 @@ public class BirthdayDetailActivity extends AppCompatActivity {
         tv_birthDate = findViewById(R.id.tv_birthDate);
         tv_daysLeft = findViewById(R.id.tv_daysLeft);
         tv_turnedAge = findViewById(R.id.tv_turnedAge);
+        tv_turntxt = findViewById(R.id.tv_turntxt);
         tv_notes = findViewById(R.id.tv_notesExtra);
         countdownView = findViewById(R.id.birthCountdown);
 
@@ -87,22 +90,14 @@ public class BirthdayDetailActivity extends AppCompatActivity {
             }
             userName.setText(name);
 
-            if (isKnowYear) {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM, yyyy");
-                String birthday = dateFormat.format(realBirthDate);
-                tv_birthDate.setText(birthday);
-            } else {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM");
-                String birthday = dateFormat.format(realBirthDate);
-                tv_birthDate.setText(birthday);
-            }
+
             long currentDateTime = currentDate.getTime();
             long birthDateTime = birthDate.getTime();
             long countDownToBirthday = birthDateTime - currentDateTime;
+            int age = calculateCurrentAge(currentDateTime, realBirthDate.getTime());
             countdownView.start(countDownToBirthday);
 
-            long daysLeft = countDownToBirthday / (1000 * 3600 * 24);
-//            long diffHours = countDownToBirthday / (60 * 60 * 1000);
+            long daysLeft = TimeUnit.MILLISECONDS.toDays(countDownToBirthday);
             long diffInHours = TimeUnit.MILLISECONDS.toHours(countDownToBirthday);
 //            Period period = displayBirthdayResult(birthDate, currentDate);
 //            int daysLeft = period.getDays();
@@ -120,14 +115,40 @@ public class BirthdayDetailActivity extends AppCompatActivity {
                 }
             }
 
+            if (isKnowYear) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM, yyyy");
+                String birthday = dateFormat.format(realBirthDate);
+                tv_birthDate.setText(birthday);
+                tv_turnedAge.setText(age + " years");
+            } else {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM");
+                String birthday = dateFormat.format(realBirthDate);
+                tv_birthDate.setText(birthday);
+                tv_turntxt.setVisibility(View.INVISIBLE);
+                tv_turnedAge.setVisibility(View.INVISIBLE);
+            }
+
+
+
 
         }
     }
 
-    private Period displayBirthdayResult(Date dateToday, Date birthdayDate) {
-//        return new Period(birthdayDate, dateToday, PeriodType.days());
-        return new Period(birthdayDate.getTime(), dateToday.getTime(), PeriodType.days());
+    private int calculateCurrentAge(long dateToday, long birthdayDate) {
+        Period dateDifferencePeriod = displayBirthdayResult(dateToday, birthdayDate);
+        int getDateInDays = dateDifferencePeriod.getDays();
+        int getDateInMonths = dateDifferencePeriod.getMonths();
+        return dateDifferencePeriod.getYears() + 1;
     }
+
+    private Period displayBirthdayResult(long dateToday, long birthdayDate) {
+        return new Period(birthdayDate, dateToday, PeriodType.yearMonthDayTime());
+    }
+
+//    private Period displayBirthdayResult(Date dateToday, Date birthdayDate) {
+////        return new Period(birthdayDate, dateToday, PeriodType.days());
+//        return new Period(birthdayDate.getTime(), dateToday.getTime(), PeriodType.days());
+//    }
 
 
     @Override

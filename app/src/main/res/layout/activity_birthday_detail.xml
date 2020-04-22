@@ -82,7 +82,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
     <TextView
-        android:id="@+id/textView7"
+        android:id="@+id/tv_turntxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -107,9 +107,9 @@
         android:textAlignment="center"
         android:textColor="@color/primaryText"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@+id/textView7"
-        app:layout_constraintStart_toStartOf="@+id/textView7"
-        app:layout_constraintTop_toBottomOf="@+id/textView7" />
+        app:layout_constraintEnd_toEndOf="@+id/tv_turntxt"
+        app:layout_constraintStart_toStartOf="@+id/tv_turntxt"
+        app:layout_constraintTop_toBottomOf="@+id/tv_turntxt" />
 
     <TextView
         android:id="@+id/textView9"

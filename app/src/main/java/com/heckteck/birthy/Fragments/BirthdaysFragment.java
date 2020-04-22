@@ -2,6 +2,7 @@ package com.heckteck.birthy.Fragments;
 
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -47,8 +48,12 @@ public class BirthdaysFragment extends Fragment implements BirthdayItemClickInte
     private BirthdayViewModel birthdayViewModel;
     private RecyclerView birthday_rv;
     private BirthdayAdapter birthdayAdapter;
-    MaterialSearchView searchView;
     private Dialog sortDialog;
+//    private BirthdayFragmentListener listener;
+//
+//    public interface BirthdayFragmentListener{
+//        void onBirthdaySent(int id);
+//    }
 
 
     public BirthdaysFragment() {
@@ -80,6 +85,8 @@ public class BirthdaysFragment extends Fragment implements BirthdayItemClickInte
             @Override
             public void onClick(View view) {
                 Intent addBirthdayIntent = new Intent(getActivity(), AddBirthdayActivity.class);
+                addBirthdayIntent.putExtra("ADD_MODE", "addMode");
+                addBirthdayIntent.putExtra("isEditMode", false);
                 startActivity(addBirthdayIntent);
             }
         });
@@ -117,38 +124,6 @@ public class BirthdaysFragment extends Fragment implements BirthdayItemClickInte
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.toolbar_menu, menu);
-
-//        MenuItem item = menu.findItem(R.id.menuBtn_search);
-//        searchView.setMenuItem(item);
-//
-//        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-////                observerSetUp();
-////                birthdayAdapter.getFilter().filter(query);
-////                searchView.hideKeyboard(getWindow().getDecorView().getRootView());
-//                return true;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-////                observerSetUp();
-////                birthdayAdapter.getFilter().filter(newText);
-//                return true;
-//            }
-//        });
-
-//        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
-//            @Override
-//            public void onSearchViewShown() {
-//            }
-//
-//            @Override
-//            public void onSearchViewClosed() {
-//                birthdayAdapter.notifyDataSetChanged();
-//            }
-//        });
-
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -244,7 +219,13 @@ public class BirthdaysFragment extends Fragment implements BirthdayItemClickInte
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.popupEdit){
-                    Toast.makeText(getActivity(), "Edit " + birthdayList.get(position).getName(), Toast.LENGTH_SHORT).show();
+
+                    Intent updateIntent = new Intent(getActivity(), AddBirthdayActivity.class);
+                    updateIntent.putExtra("isEditMode", true);
+                    updateIntent.putExtra("UPDATE_MODE", "updateMode");
+                    updateIntent.putExtra("BIRTHDAY_ID", birthdayList.get(position).getId());
+                    startActivity(updateIntent);
+
                 }else if (item.getItemId() == R.id.popupDelete){
                     birthdayViewModel.deleteBirthday(birthdayList.get(position));
                     birthdayAdapter.notifyItemRemoved(position);
@@ -256,4 +237,21 @@ public class BirthdaysFragment extends Fragment implements BirthdayItemClickInte
         popupMenu.setGravity(Gravity.END);
         popupMenu.show();
     }
+
+//    @Override
+//    public void onAttach(@NonNull Context context) {
+//        super.onAttach(context);
+//        if (context instanceof BirthdayFragmentListener){
+//            listener = (BirthdayFragmentListener) context;
+//        }else {
+//            throw new RuntimeException(context.toString()
+//            + " must implement interface");
+//        }
+//    }
+//
+//    @Override
+//    public void onDetach() {
+//        super.onDetach();
+//        listener = null;
+//    }
 }

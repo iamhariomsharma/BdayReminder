@@ -8,6 +8,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 @Dao
 public interface BirthdayDao {
@@ -26,6 +27,12 @@ public interface BirthdayDao {
 
     @Query("SELECT * FROM birthdays_table ORDER BY name ASC")
     LiveData<List<Birthday>> getBirthdayByNameAsc();
+
+    @Query("SELECT * FROM birthdays_table WHERE id=:birthdayId")
+    LiveData<Birthday> getBirthdayById(int birthdayId);
+
+    @Update
+    void updateBirthday(Birthday birthday);
 
     @Delete
     void deleteBirthday(Birthday birthday);

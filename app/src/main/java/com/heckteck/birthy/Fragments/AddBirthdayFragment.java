@@ -49,6 +49,9 @@ import java.util.Random;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -74,6 +77,10 @@ public class AddBirthdayFragment extends Fragment {
     int day, hour, minute, month;
     private final String SAMPLE_CROPPED_IMG_NAME = "SampleCropImg";
     private boolean isYearKnow = false;
+    boolean isEditMode;
+    int birthdayId;
+    Bundle bundle;
+    private Birthday mBirthday = null;
 
     Calendar now = Calendar.getInstance();
 
@@ -85,6 +92,7 @@ public class AddBirthdayFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_birthday, container, false);
 
@@ -99,6 +107,62 @@ public class AddBirthdayFragment extends Fragment {
         btn_attachContact = view.findViewById(R.id.attachContact);
 
         addBirthdayViewModel = ViewModelProviders.of(getActivity()).get(AddBirthdayViewModel.class);
+
+        bundle = getArguments();
+        if (bundle != null) {
+            birthdayId = bundle.getInt("BIRTH_ID");
+            addBirthdayViewModel.getBirthday(birthdayId).observe(getActivity(), new Observer<Birthday>() {
+                @Override
+                public void onChanged(Birthday birthday) {
+                    mBirthday = birthday;
+                    et_name.setText(birthday.getName());
+                    et_dob.setText(birthday.getBirthDate());
+                    cb_isKnowYear.setChecked(birthday.isYearKnow());
+                    et_phone.setText(birthday.getPhoneNumber());
+                    et_notes.setText(birthday.getNotes());
+                    et_timePicker.setText(birthday.getTimeToWish());
+
+                    if (birthday.getUserImg().equals("null")) {
+                        userImg.setImageResource(R.drawable.ic_userimg);
+                    } else {
+                        userImg.setImageURI(Uri.parse(birthday.getUserImg()));
+                    }
+                }
+            });
+        } else {
+            Log.d("ADD_BDAY", "Bundle is null");
+        }
+
+//        bundle = getArguments();
+//        if (bundle != null) {
+//            birthdayId = bundle.getInt("BIRTH_ID");
+//            isEditMode = bundle.getBoolean("isEditMode");
+//            addBirthdayViewModel.getBirthday(birthdayId).observe(getActivity(), new Observer<Birthday>() {
+//                @Override
+//                public void onChanged(Birthday birthday) {
+//
+//                    et_name.setText(birthday.getName());
+//                    et_dob.setText(birthday.getBirthDate());
+//                    cb_isKnowYear.setChecked(birthday.isYearKnow());
+//                    et_phone.setText(birthday.getPhoneNumber());
+//                    et_notes.setText(birthday.getNotes());
+//                    et_timePicker.setText(birthday.getTimeToWish());
+//
+//                    if (birthday.getUserImg().equals("null")) {
+//                        userImg.setImageResource(R.drawable.ic_userimg);
+//                    } else {
+//                        userImg.setImageURI(Uri.parse(birthday.getUserImg()));
+//                    }
+//                }
+//            });
+//        } else {
+//            Log.e("ADDBDAY", "Bundle is null");
+//            isEditMode = false;
+//        }
+
+//        if (isEditMode) {
+//
+//        }
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -153,10 +217,9 @@ public class AddBirthdayFragment extends Fragment {
         fab_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                name = et_name.getText().toString().trim();
-                String dateOfBirth = et_dob.getText().toString().trim();
-
-                if (TextUtils.isEmpty(name) || TextUtils.isEmpty(dateOfBirth)) {
+//                name = et_name.getText().toString().trim();
+//                dob = et_dob.getText().toString().trim();
+                if (TextUtils.isEmpty(et_name.getText().toString()) || TextUtils.isEmpty(et_dob.getText().toString())) {
                     Toast.makeText(getActivity(), "Please fill a name and a date", Toast.LENGTH_LONG).show();
                 } else {
                     insertBirthday();
@@ -173,6 +236,13 @@ public class AddBirthdayFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
     }
 
     private void insertBirthday() {
@@ -215,9 +285,16 @@ public class AddBirthdayFragment extends Fragment {
                 realBirthdayDate,
                 isYearKnow);
 
-        addBirthdayViewModel.insert(birthday);
-        Toast.makeText(getActivity(), "Birthday Inserted successfully", Toast.LENGTH_SHORT).show();
-        getActivity().finish();
+        if (mBirthday == null) {
+            addBirthdayViewModel.insert(birthday);
+            Toast.makeText(getActivity(), "Birthday Added", Toast.LENGTH_SHORT).show();
+            getActivity().finish();
+        } else {
+            birthday.setId(mBirthday.getId());
+            addBirthdayViewModel.updateBirthday(birthday);
+            Toast.makeText(getActivity(), "Birthday Updated", Toast.LENGTH_SHORT).show();
+        }
+
 
         startAlarm();
 

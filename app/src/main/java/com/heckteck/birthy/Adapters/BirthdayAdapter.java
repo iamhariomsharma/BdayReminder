@@ -293,14 +293,20 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    birthdayItemClickInterface.onItemClick(getAdapterPosition());
+                    int position = getAdapterPosition();
+                    if (birthdayItemClickInterface != null && position != RecyclerView.NO_POSITION){
+                        birthdayItemClickInterface.onItemClick(position);
+                    }
                 }
             });
 
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    birthdayItemClickInterface.onItemLongClick(getAdapterPosition(), itemView);
+                    int position = getAdapterPosition();
+                    if (birthdayItemClickInterface != null && position != RecyclerView.NO_POSITION){
+                        birthdayItemClickInterface.onItemLongClick(position, itemView);
+                    }
                     return true;
                 }
             });

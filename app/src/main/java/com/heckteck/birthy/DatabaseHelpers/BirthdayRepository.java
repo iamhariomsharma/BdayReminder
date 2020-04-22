@@ -3,12 +3,9 @@ package com.heckteck.birthy.DatabaseHelpers;
 import android.app.Application;
 import android.os.AsyncTask;
 
-import com.heckteck.birthy.Activities.MainActivity;
-
 import java.util.List;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 public class BirthdayRepository {
     private BirthdayDao birthdayDao;
@@ -16,6 +13,7 @@ public class BirthdayRepository {
     private LiveData<List<Birthday>> birthdaysByNameDesc;
     private LiveData<List<Birthday>> birthdaysByNameAsc;
     private LiveData<List<Birthday>> birthdayByDateAsc;
+
 
     public BirthdayRepository(Application application) {
         BirthdayDatabase birthdayDatabase = BirthdayDatabase.getInstance(application);
@@ -33,6 +31,16 @@ public class BirthdayRepository {
     public void deleteBirthday(Birthday birthday){
         new DeleteBirthdayAsyncTask(birthdayDao).execute(birthday);
     }
+
+    public void updateBirthday(Birthday birthday){
+        new UpdateBirthdayAsyncTask(birthdayDao).execute(birthday);
+    }
+
+
+    public LiveData<Birthday> getBirthday(int id){
+        return birthdayDao.getBirthdayById(id);
+    }
+
 
     public LiveData<List<Birthday>> getAllBirthdays() {
         return allBirthdays;
@@ -77,6 +85,21 @@ public class BirthdayRepository {
         @Override
         protected Void doInBackground(Birthday... birthdays) {
             birthdayDao.deleteBirthday(birthdays[0]);
+            return null;
+        }
+    }
+
+    private static class UpdateBirthdayAsyncTask extends AsyncTask<Birthday, Void, Void>{
+
+        private BirthdayDao birthdayDao;
+
+        public UpdateBirthdayAsyncTask(BirthdayDao birthdayDao) {
+            this.birthdayDao = birthdayDao;
+        }
+
+        @Override
+        protected Void doInBackground(Birthday... birthdays) {
+            birthdayDao.updateBirthday(birthdays[0]);
             return null;
         }
     }
