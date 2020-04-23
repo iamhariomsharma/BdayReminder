@@ -4,9 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +27,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
@@ -203,11 +206,35 @@ public class MainActivity extends AppCompatActivity implements BirthdayItemClick
 
     @Override
     public void onItemClick(int position) {
-
+        Intent detailIntent = new Intent(getApplicationContext(), BirthdayDetailActivity.class);
+        Birthday birthday = birthdayList.get(position);
+        detailIntent.putExtra("birthdayDetail", birthday);
+        startActivity(detailIntent);
     }
 
     @Override
-    public void onItemLongClick(int position, View view) {
+    public void onItemLongClick(final int position, View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        popupMenu.inflate(R.menu.item_menu);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.popupEdit){
 
+                    Intent updateIntent = new Intent(getApplicationContext(), AddBirthdayActivity.class);
+                    updateIntent.putExtra("isEditMode", true);
+                    updateIntent.putExtra("UPDATE_MODE", "updateMode");
+                    updateIntent.putExtra("BIRTHDAY_ID", birthdayList.get(position).getId());
+                    startActivity(updateIntent);
+                }else if (item.getItemId() == R.id.popupDelete){
+                    birthdayViewModel.deleteBirthday(birthdayList.get(position));
+                    birthdayAdapter.notifyItemRemoved(position);
+                    Toast.makeText(getApplicationContext(), birthdayList.get(position).getName() + " Deleted", Toast.LENGTH_SHORT).show();
+                }
+                return false;
+            }
+        });
+        popupMenu.setGravity(Gravity.END);
+        popupMenu.show();
     }
 }

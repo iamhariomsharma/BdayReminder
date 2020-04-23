@@ -295,7 +295,7 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
                 public void onClick(View v) {
                     int position = getAdapterPosition();
                     if (birthdayItemClickInterface != null && position != RecyclerView.NO_POSITION){
-                        birthdayItemClickInterface.onItemClick(position);
+                        birthdayItemClickInterface.onItemClick(birthdays.indexOf(birthdaysFiltered.get(position)));
                     }
                 }
             });
@@ -305,7 +305,7 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
                 public boolean onLongClick(View view) {
                     int position = getAdapterPosition();
                     if (birthdayItemClickInterface != null && position != RecyclerView.NO_POSITION){
-                        birthdayItemClickInterface.onItemLongClick(position, itemView);
+                        birthdayItemClickInterface.onItemLongClick(birthdays.indexOf(birthdaysFiltered.get(position)), itemView);
                     }
                     return true;
                 }

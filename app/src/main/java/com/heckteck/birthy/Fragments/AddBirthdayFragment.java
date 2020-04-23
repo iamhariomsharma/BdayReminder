@@ -117,7 +117,7 @@ public class AddBirthdayFragment extends Fragment {
                     mBirthday = birthday;
                     et_name.setText(birthday.getName());
                     et_dob.setText(birthday.getBirthDate());
-                    cb_isKnowYear.setChecked(birthday.isYearKnow());
+                    cb_isKnowYear.setChecked(!birthday.isYearKnow());
                     et_phone.setText(birthday.getPhoneNumber());
                     et_notes.setText(birthday.getNotes());
                     et_timePicker.setText(birthday.getTimeToWish());

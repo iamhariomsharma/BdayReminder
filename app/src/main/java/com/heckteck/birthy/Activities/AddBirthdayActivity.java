@@ -22,7 +22,6 @@ public class AddBirthdayActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.addBirthdayToolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Add New Birthday");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Bundle bundle = getIntent().getExtras();
@@ -35,6 +34,7 @@ public class AddBirthdayActivity extends AppCompatActivity {
             String checkMode = addMode;
             if (checkMode != null){
                 if (checkMode.equals("addMode")){
+                    setTitle("Add New Birthday");
                     AddBirthdayFragment addBirthdayFragment = new AddBirthdayFragment();
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.addBirthdayContainer, addBirthdayFragment)
@@ -43,6 +43,7 @@ public class AddBirthdayActivity extends AppCompatActivity {
             }else {
                 checkMode = updateMode;
                 if (checkMode.equals("updateMode")){
+                    setTitle("Edit Birthday");
                     Bundle birthdayBundle = new Bundle();
                     birthdayBundle.putInt("BIRTH_ID", birthdayId);
                     AddBirthdayFragment fragment = new AddBirthdayFragment();

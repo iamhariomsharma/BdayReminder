@@ -4,7 +4,9 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.heckteck.birthy.Models.Greeting;
@@ -40,6 +42,18 @@ public class GreetingsAdapter extends RecyclerView.Adapter<GreetingsAdapter.Gree
     public void onBindViewHolder(@NonNull GreetingsHolder holder, int position) {
         Greeting greeting = greetings.get(position);
         holder.tv_wish.setText(greeting.getGreeting());
+
+        holder.relativeLayout.setAnimation(AnimationUtils.loadAnimation(holder.itemView.getContext(), R.anim.fade_transition_animation));
+
+        if (holder.getAdapterPosition() % 4 == 0) {
+            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg2);
+        } else if (holder.getAdapterPosition() % 4 == 1) {
+            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg1);
+        } else if (holder.getAdapterPosition() % 4 == 2) {
+            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg4);
+        } else if (holder.getAdapterPosition() % 4 == 3) {
+            holder.relativeLayout.setBackgroundResource(R.drawable.card_bg3);
+        }
     }
 
     @Override
@@ -53,13 +67,15 @@ public class GreetingsAdapter extends RecyclerView.Adapter<GreetingsAdapter.Gree
 
     class GreetingsHolder extends RecyclerView.ViewHolder {
         TextView tv_wish;
+        RelativeLayout relativeLayout;
 
         GreetingsHolder(View itemView) {
             super(itemView);
             tv_wish = itemView.findViewById(R.id.tv_wish);
+            relativeLayout = itemView.findViewById(R.id.greetings_container);
             itemView.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    int position = GreetingsAdapter.GreetingsHolder.this.getAdapterPosition();
+                    int position = getAdapterPosition();
                     if (listener != null && position != -1)
                         listener.onItemClick(greetings.get(position));
                 }

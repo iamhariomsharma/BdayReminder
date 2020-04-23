@@ -11,13 +11,14 @@ public class NotificationHelper extends Application {
 
     private void createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= 26) {
-            NotificationChannel notificationChannel = new NotificationChannel("Birthdays",
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_1_ID,
                     "Birthday Reminders",
                     NotificationManager.IMPORTANCE_HIGH);
             notificationChannel.setDescription("Birthday Reminders Channel");
             notificationChannel.enableVibration(true);
             getSystemService(NotificationManager.class).createNotificationChannel(notificationChannel);
         }
+
 
     }
 

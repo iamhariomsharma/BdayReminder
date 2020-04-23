@@ -121,16 +121,16 @@ public class SendWishesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_send_wishes, container, false);
 
         greetingList = new ArrayList<>();
-        greetingList.add(new Greeting(getResources().getString(R.string.app_name)));
-//        greetingList.add(new Greeting(getResources().getString(2131820619)));
-//        greetingList.add(new Greeting(getResources().getString(2131820620)));
-//        greetingList.add(new Greeting(getResources().getString(2131820621)));
-//        greetingList.add(new Greeting(getResources().getString(2131820622)));
-//        greetingList.add(new Greeting(getResources().getString(2131820623)));
-//        greetingList.add(new Greeting(getResources().getString(2131820624)));
-//        greetingList.add(new Greeting(getResources().getString(2131820625)));
-//        greetingList.add(new Greeting(getResources().getString(2131820626)));
-//        greetingList.add(new Greeting(getResources().getString(2131820618)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish1)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish2)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish3)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish4)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish5)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish6)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish7)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish8)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish9)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish10)));
         RecyclerView recyclerView = view.findViewById(R.id.greetings_rv);
         recyclerView.setHasFixedSize(true);
         GreetingsAdapter greetingsAdapter = new GreetingsAdapter(getActivity(), greetingList);
