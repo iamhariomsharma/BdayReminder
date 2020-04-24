@@ -82,19 +82,28 @@ public class SendWishesFragment extends Fragment {
     }
 
     private void makePhoneCall() {
-        String callPhone = "tel:" + phoneNumber;
-        startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(callPhone)));
+        if (phoneNumber.isEmpty()) {
+            Toast.makeText(getActivity(), "Contact not available", Toast.LENGTH_SHORT).show();
+        } else {
+            String callPhone = "tel:" + phoneNumber;
+            startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(callPhone)));
+        }
+
     }
 
     private void sendSMS() {
-        String phone = String.format("smsto: %s", phoneNumber);
-        Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.parse(phone));
-        intent.putExtra("sms_body", myGreeting.getGreeting());
-        try {
-            startActivity(intent);
-        } catch (ActivityNotFoundException activityNotFoundException) {
-            Toast.makeText(getActivity(), "SMS failed, please try again later.", Toast.LENGTH_SHORT).show();
+        if (phoneNumber.isEmpty()) {
+            Toast.makeText(getActivity(), "Contact not available", Toast.LENGTH_SHORT).show();
+        } else {
+            String phone = String.format("smsto: %s", phoneNumber);
+            Intent intent = new Intent(Intent.ACTION_SENDTO);
+            intent.setData(Uri.parse(phone));
+            intent.putExtra("sms_body", myGreeting.getGreeting());
+            try {
+                startActivity(intent);
+            } catch (ActivityNotFoundException activityNotFoundException) {
+                Toast.makeText(getActivity(), "SMS failed, please try again later.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -119,18 +128,10 @@ public class SendWishesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_send_wishes, container, false);
+        getActivity().setTitle("Greetings");
 
-        greetingList = new ArrayList<>();
-        greetingList.add(new Greeting(getResources().getString(R.string.wish1)));
-        greetingList.add(new Greeting(getResources().getString(R.string.wish2)));
-        greetingList.add(new Greeting(getResources().getString(R.string.wish3)));
-        greetingList.add(new Greeting(getResources().getString(R.string.wish4)));
-        greetingList.add(new Greeting(getResources().getString(R.string.wish5)));
-        greetingList.add(new Greeting(getResources().getString(R.string.wish6)));
-        greetingList.add(new Greeting(getResources().getString(R.string.wish7)));
-        greetingList.add(new Greeting(getResources().getString(R.string.wish8)));
-        greetingList.add(new Greeting(getResources().getString(R.string.wish9)));
-        greetingList.add(new Greeting(getResources().getString(R.string.wish10)));
+        loadGreetings();
+
         RecyclerView recyclerView = view.findViewById(R.id.greetings_rv);
         recyclerView.setHasFixedSize(true);
         GreetingsAdapter greetingsAdapter = new GreetingsAdapter(getActivity(), greetingList);
@@ -221,7 +222,7 @@ public class SendWishesFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(@NonNull Menu menu) {
         MenuItem item = menu.findItem(R.id.menuBtn_search);
-        if (item != null){
+        if (item != null) {
             item.setVisible(false);
         }
     }
@@ -241,5 +242,59 @@ public class SendWishesFragment extends Fragment {
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void loadGreetings() {
+        greetingList = new ArrayList<>();
+        greetingList.add(new Greeting(getResources().getString(R.string.wish1)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish2)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish3)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish4)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish5)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish6)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish7)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish8)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish9)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish10)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish11)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish12)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish13)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish14)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish15)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish16)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish17)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish18)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish19)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish20)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish21)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish22)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish23)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish24)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish25)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish26)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish27)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish28)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish29)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish30)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish31)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish32)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish33)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish34)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish35)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish36)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish37)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish38)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish39)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish40)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish41)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish42)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish43)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish44)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish45)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish46)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish47)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish48)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish49)));
+        greetingList.add(new Greeting(getResources().getString(R.string.wish50)));
     }
 }

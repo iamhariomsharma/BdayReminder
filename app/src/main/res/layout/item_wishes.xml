@@ -27,11 +27,12 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="15dp"
             android:ellipsize="end"
+            android:fontFamily="@font/poppins_medium"
             android:lineSpacingExtra="8dp"
             android:scrollHorizontally="true"
             android:text="Wishing you a very happy birthday dear, may god blace you on this beautiful day and fulfill all of your wishes."
             android:textColor="@android:color/black"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

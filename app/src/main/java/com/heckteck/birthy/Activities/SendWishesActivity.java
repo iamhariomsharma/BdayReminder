@@ -13,5 +13,6 @@ public class SendWishesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_wishes);
 
+
     }
 }

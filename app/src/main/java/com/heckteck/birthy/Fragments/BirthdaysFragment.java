@@ -69,6 +69,7 @@ public class BirthdaysFragment extends Fragment implements BirthdayItemClickInte
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        getActivity().setTitle("Birthy");
         View view = inflater.inflate(R.layout.fragment_birthdays, container, false);
 
         FloatingActionButton fab_add = view.findViewById(R.id.fab_addBday);

@@ -1,28 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/birthdaysFragment"
-        android:icon="@mipmap/ic_launcher"
-        android:title="Home"/>
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/birthdaysFragment"
+            android:icon="@drawable/ic_home"
+            android:title="Home"/>
 
-    <item android:id="@+id/sendWishesFragment"
-        android:icon="@mipmap/ic_launcher"
-        android:title="Send Greetings"/>
+        <item android:id="@+id/sendWishesFragment"
+            android:icon="@drawable/ic_greeting"
+            android:title="Greetings"/>
 
-    <item android:id="@+id/item3"
-        android:icon="@mipmap/ic_launcher"
-        android:title="Collection"/>
+        <item android:id="@+id/settingsFragment"
+            android:icon="@drawable/ic_settings"
+            android:title="Settings"/>
 
-    <item android:title="others">
-        <menu>
-            <item android:id="@+id/item4"
-                android:icon="@mipmap/ic_launcher"
-                android:title="Settings"/>
+        <item android:id="@+id/aboutFragment"
+            android:icon="@drawable/ic_contact"
+            android:title="About Us"/>
+    </group>
 
-            <item android:id="@+id/item5"
-                android:icon="@mipmap/ic_launcher"
-                android:title="About Us"/>
-        </menu>
-    </item>
+
 
 </menu>
