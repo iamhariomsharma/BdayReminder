@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    app:cardCornerRadius="32dp"
+    app:cardCornerRadius="24dp"
     app:cardElevation="20sp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/primaryText"
+        android:background="@android:color/white"
         android:orientation="vertical"
         android:padding="10dp">
 
@@ -30,7 +30,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:gravity="center">
 
             <TextView
@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@android:color/white"
+                android:textColor="@android:color/black"
                 android:textSize="38sp"
                 android:textStyle="bold"
                 tools:text="It's Ankit's Birthday Today!" />
@@ -71,11 +71,11 @@
                 android:id="@+id/btn_sendWishes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edittext_bg"
+                android:background="@drawable/wish_btn_bg"
                 android:text="Wish Now"
                 android:padding="16dp"
                 android:textAlignment="center"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:textSize="24sp" />
         </LinearLayout>
     </LinearLayout>

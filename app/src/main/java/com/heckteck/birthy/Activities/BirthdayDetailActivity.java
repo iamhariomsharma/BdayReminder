@@ -3,7 +3,6 @@ package com.heckteck.birthy.Activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.ViewModelProviders;
 import cn.iwgang.countdownview.CountdownView;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -11,12 +10,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +20,6 @@ import com.heckteck.birthy.DatabaseHelpers.Birthday;
 import com.heckteck.birthy.R;
 import com.heckteck.birthy.ViewModels.BirthdayViewModel;
 
-import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
 
@@ -82,6 +77,7 @@ public class BirthdayDetailActivity extends AppCompatActivity {
             boolean isKnowYear = birthday.isYearKnow();
             Date birthDate = birthday.getTimeLeft();
             Date realBirthDate = birthday.getRealBirthDate();
+            String notes = birthday.getNotes();
 
             if (imgUri.equals("null")) {
                 userProfile.setImageResource(R.drawable.ic_userimg);
@@ -128,8 +124,11 @@ public class BirthdayDetailActivity extends AppCompatActivity {
                 tv_turnedAge.setVisibility(View.INVISIBLE);
             }
 
-
-
+            if (notes.isEmpty()){
+                tv_notes.setText("No Notes");
+            }else {
+                tv_notes.setText(notes);
+            }
 
         }
     }

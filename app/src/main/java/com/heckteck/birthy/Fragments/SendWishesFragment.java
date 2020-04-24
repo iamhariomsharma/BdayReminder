@@ -184,7 +184,7 @@ public class SendWishesFragment extends Fragment {
                     }
                 });
                 sendCall.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View param1View) {
+                    public void onClick(View view) {
                         asKCallPermission();
                         shareDialog.dismiss();
                         Toast.makeText(getActivity(), "Choose greetings you want to send", Toast.LENGTH_SHORT).show();

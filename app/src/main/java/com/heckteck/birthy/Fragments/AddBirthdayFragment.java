@@ -117,10 +117,12 @@ public class AddBirthdayFragment extends Fragment {
                     mBirthday = birthday;
                     et_name.setText(birthday.getName());
                     et_dob.setText(birthday.getBirthDate());
-                    cb_isKnowYear.setChecked(!birthday.isYearKnow());
+//                    cb_isKnowYear.setChecked(!birthday.isYearKnow());
+                    isYearKnow = birthday.isYearKnow();
                     et_phone.setText(birthday.getPhoneNumber());
                     et_notes.setText(birthday.getNotes());
                     et_timePicker.setText(birthday.getTimeToWish());
+                    imgUri = Uri.parse(birthday.getUserImg());
 
                     if (birthday.getUserImg().equals("null")) {
                         userImg.setImageResource(R.drawable.ic_userimg);
@@ -293,6 +295,7 @@ public class AddBirthdayFragment extends Fragment {
             birthday.setId(mBirthday.getId());
             addBirthdayViewModel.updateBirthday(birthday);
             Toast.makeText(getActivity(), "Birthday Updated", Toast.LENGTH_SHORT).show();
+            getActivity().finish();
         }
 
 
