@@ -42,6 +42,7 @@ import org.joda.time.Period;
 import org.joda.time.PeriodType;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
@@ -81,6 +82,8 @@ public class AddBirthdayFragment extends Fragment {
     int birthdayId;
     Bundle bundle;
     private Birthday mBirthday = null;
+    AlarmManager alarmManager;
+    PendingIntent pendingIntent;
 
     Calendar now = Calendar.getInstance();
 
@@ -115,6 +118,7 @@ public class AddBirthdayFragment extends Fragment {
                 @Override
                 public void onChanged(Birthday birthday) {
                     mBirthday = birthday;
+
                     et_name.setText(birthday.getName());
                     et_dob.setText(birthday.getBirthDate());
 //                    cb_isKnowYear.setChecked(!birthday.isYearKnow());
@@ -123,7 +127,6 @@ public class AddBirthdayFragment extends Fragment {
                     et_notes.setText(birthday.getNotes());
                     et_timePicker.setText(birthday.getTimeToWish());
                     imgUri = Uri.parse(birthday.getUserImg());
-
                     if (birthday.getUserImg().equals("null")) {
                         userImg.setImageResource(R.drawable.ic_userimg);
                     } else {
@@ -291,15 +294,17 @@ public class AddBirthdayFragment extends Fragment {
             addBirthdayViewModel.insert(birthday);
             Toast.makeText(getActivity(), "Birthday Added", Toast.LENGTH_SHORT).show();
             getActivity().finish();
+            startAlarm();
         } else {
             birthday.setId(mBirthday.getId());
             addBirthdayViewModel.updateBirthday(birthday);
             Toast.makeText(getActivity(), "Birthday Updated", Toast.LENGTH_SHORT).show();
             getActivity().finish();
+            cancelAlarm();
+            startAlarm();
         }
 
 
-        startAlarm();
 
     }
 
@@ -335,16 +340,22 @@ public class AddBirthdayFragment extends Fragment {
         }
 
         int randomNumber = (int) ((new Date()).getTime() / 1000L % 2147483647L);
-        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(getActivity(), NotificationReceiver.class);
         intent.putExtra("TITLE", et_name.getText().toString());
         intent.putExtra("MSG", et_dob.getText().toString());
         intent.putExtra("PHONE", et_phone.getText().toString());
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), randomNumber, intent, 0);
-        if (Build.VERSION.SDK_INT >= 23) {
+        pendingIntent = PendingIntent.getBroadcast(getActivity(), randomNumber, intent, 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, now.getTimeInMillis(), pendingIntent);
         } else {
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, now.getTimeInMillis(), pendingIntent);
+        }
+    }
+
+    private void cancelAlarm(){
+        if (alarmManager != null){
+            alarmManager.cancel(pendingIntent);
         }
     }
 

@@ -128,7 +128,7 @@ public class SendWishesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_send_wishes, container, false);
-        getActivity().setTitle("Greetings");
+//        getActivity().setTitle("Greetings");
 
         loadGreetings();
 

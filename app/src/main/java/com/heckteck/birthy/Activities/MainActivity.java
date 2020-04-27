@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
 import com.heckteck.birthy.Adapters.BirthdayAdapter;
 import com.heckteck.birthy.DatabaseHelpers.Birthday;
+import com.heckteck.birthy.Fragments.BirthdaysFragment;
 import com.heckteck.birthy.R;
 import com.heckteck.birthy.Utils.BirthdayItemClickInterface;
 import com.heckteck.birthy.ViewModels.BirthdayViewModel;
@@ -36,6 +37,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements BirthdayItemClick
     List<Birthday> birthdayList = new ArrayList<>();
     BirthdayAdapter birthdayAdapter;
     MaterialSearchView searchView;
+    AppBarConfiguration appBarConfiguration;
 
 
     public static String ORDER_BY = "name";
@@ -69,6 +72,17 @@ public class MainActivity extends AppCompatActivity implements BirthdayItemClick
 
         notificationManager = NotificationManagerCompat.from(this);
         navController = Navigation.findNavController(this, R.id.navHostFragment);
+        drawerLayout = findViewById(R.id.drawer);
+        navigationView = findViewById(R.id.navigation_view);
+        toolbar = findViewById(R.id.addBirthdayToolbar);
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+
+//        appBarConfiguration =
+//                new AppBarConfiguration.Builder(navController.getGraph()).setDrawerLayout(drawerLayout).build();
+
+        NavigationUI.setupWithNavController(navigationView, navController);
 
         Intent intent = getIntent();
         if (intent.getExtras() != null) {
@@ -97,19 +111,22 @@ public class MainActivity extends AppCompatActivity implements BirthdayItemClick
             }
         }
 
-        drawerLayout = findViewById(R.id.drawer);
-        navigationView = findViewById(R.id.navigation_view);
-        toolbar = findViewById(R.id.addBirthdayToolbar);
+
         birthdayViewModel = ViewModelProviders.of(this).get(BirthdayViewModel.class);
+
+        birthdayViewModel.getAllBirthdays().observe(this, new Observer<List<Birthday>>() {
+            @Override
+            public void onChanged(List<Birthday> birthdays) {
+                birthdayList.addAll(birthdays);
+            }
+        });
+
 
         searchView = findViewById(R.id.searchView);
         navigationView.setItemIconTintList(null);
-        NavigationUI.setupWithNavController(navigationView, navController);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawerOpen, R.string.drawerClose);
         drawerToggle.setDrawerIndicatorEnabled(false);
-//        drawerLayout.addDrawerListener(drawerToggle);
+        drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,7 +137,6 @@ public class MainActivity extends AppCompatActivity implements BirthdayItemClick
         drawerToggle.syncState();
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
@@ -139,8 +155,12 @@ public class MainActivity extends AppCompatActivity implements BirthdayItemClick
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                observerSetUp();
-                birthdayAdapter.getFilter().filter(newText);
+                if (birthdayList.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "No Birthdays found", Toast.LENGTH_SHORT).show();
+                } else {
+                    observerSetUp();
+                    birthdayAdapter.getFilter().filter(newText);
+                }
                 return true;
             }
         });
@@ -152,7 +172,9 @@ public class MainActivity extends AppCompatActivity implements BirthdayItemClick
 
             @Override
             public void onSearchViewClosed() {
-                birthdayAdapter.notifyDataSetChanged();
+                if (!birthdayList.isEmpty()) {
+                    birthdayAdapter.notifyDataSetChanged();
+                }
             }
         });
 
@@ -194,11 +216,17 @@ public class MainActivity extends AppCompatActivity implements BirthdayItemClick
 
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        return NavigationUI.navigateUp(navController, drawerLayout) || super.onSupportNavigateUp();
+    }
 
     @Override
     public void onBackPressed() {
         if (searchView.isSearchOpen()) {
             searchView.closeSearch();
+        } else if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -219,14 +247,14 @@ public class MainActivity extends AppCompatActivity implements BirthdayItemClick
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.popupEdit){
+                if (item.getItemId() == R.id.popupEdit) {
 
                     Intent updateIntent = new Intent(getApplicationContext(), AddBirthdayActivity.class);
                     updateIntent.putExtra("isEditMode", true);
                     updateIntent.putExtra("UPDATE_MODE", "updateMode");
                     updateIntent.putExtra("BIRTHDAY_ID", birthdayList.get(position).getId());
                     startActivity(updateIntent);
-                }else if (item.getItemId() == R.id.popupDelete){
+                } else if (item.getItemId() == R.id.popupDelete) {
                     birthdayViewModel.deleteBirthday(birthdayList.get(position));
                     birthdayAdapter.notifyItemRemoved(position);
                     Toast.makeText(getApplicationContext(), birthdayList.get(position).getName() + " Deleted", Toast.LENGTH_SHORT).show();

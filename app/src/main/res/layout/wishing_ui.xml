@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    app:cardCornerRadius="24dp"
+    app:cardCornerRadius="32dp"
     app:cardElevation="20sp">
 
     <LinearLayout
@@ -75,7 +75,7 @@
                 android:text="Wish Now"
                 android:padding="16dp"
                 android:textAlignment="center"
-                android:textColor="@android:color/white"
+                android:textColor="@android:color/black"
                 android:textSize="24sp" />
         </LinearLayout>
     </LinearLayout>

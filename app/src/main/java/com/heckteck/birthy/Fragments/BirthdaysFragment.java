@@ -22,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +50,7 @@ public class BirthdaysFragment extends Fragment implements BirthdayItemClickInte
     private RecyclerView birthday_rv;
     private BirthdayAdapter birthdayAdapter;
     private Dialog sortDialog;
+    private LinearLayout emptyView;
 //    private BirthdayFragmentListener listener;
 //
 //    public interface BirthdayFragmentListener{
@@ -69,18 +71,44 @@ public class BirthdaysFragment extends Fragment implements BirthdayItemClickInte
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        getActivity().setTitle("Birthy");
-        View view = inflater.inflate(R.layout.fragment_birthdays, container, false);
+        return inflater.inflate(R.layout.fragment_birthdays, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+//        getActivity().setTitle("Birthy");
+        super.onViewCreated(view, savedInstanceState);
 
         FloatingActionButton fab_add = view.findViewById(R.id.fab_addBday);
-
-//        LayoutInflater factory = getLayoutInflater();
-//        View searchItemView = factory.inflate(R.layout.activity_main, null);
-//        searchView = searchItemView.findViewById(R.id.searchView);
-
+        birthdayViewModel = ViewModelProviders.of(getActivity()).get(BirthdayViewModel.class);
+        emptyView = view.findViewById(R.id.emptyView);
         birthday_rv = view.findViewById(R.id.birthdayRecycler);
-        initRecyclerView();
-        initViewModel();
+
+        birthday_rv.setHasFixedSize(true);
+        birthday_rv.setItemViewCacheSize(20);
+        birthday_rv.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        Observer<List<Birthday>> birthdayObserver = new Observer<List<Birthday>>() {
+            @Override
+            public void onChanged(List<Birthday> birthdays) {
+                birthdayList.clear();
+                birthdayList.addAll(birthdays);
+
+                if (birthdayList.isEmpty()) {
+                    birthday_rv.setVisibility(View.GONE);
+                    emptyView.setVisibility(View.VISIBLE);
+                } else {
+                    birthday_rv.setVisibility(View.VISIBLE);
+                    emptyView.setVisibility(View.GONE);
+                }
+                birthdayAdapter = new BirthdayAdapter(getActivity(), birthdayList, BirthdaysFragment.this);
+                birthdayAdapter.setHasStableIds(true);
+                birthday_rv.setAdapter(birthdayAdapter);
+                birthdayAdapter.notifyDataSetChanged();
+            }
+        };
+        birthdayViewModel.getAllBirthdays().observe(getActivity(), birthdayObserver);
+
 
         fab_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,8 +119,6 @@ public class BirthdaysFragment extends Fragment implements BirthdayItemClickInte
                 startActivity(addBirthdayIntent);
             }
         });
-
-        return view;
     }
 
     private void initViewModel() {
@@ -101,6 +127,14 @@ public class BirthdaysFragment extends Fragment implements BirthdayItemClickInte
             public void onChanged(List<Birthday> birthdays) {
                 birthdayList.clear();
                 birthdayList.addAll(birthdays);
+
+                if (birthdayList.isEmpty()) {
+                    birthday_rv.setVisibility(View.GONE);
+                    emptyView.setVisibility(View.VISIBLE);
+                } else {
+                    birthday_rv.setVisibility(View.VISIBLE);
+                    emptyView.setVisibility(View.GONE);
+                }
 
                 if (birthdayAdapter == null) {
                     birthdayAdapter = new BirthdayAdapter(getActivity(), birthdayList, BirthdaysFragment.this);
@@ -120,7 +154,6 @@ public class BirthdaysFragment extends Fragment implements BirthdayItemClickInte
         birthday_rv.setItemViewCacheSize(20);
         birthday_rv.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
-
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
@@ -219,7 +252,7 @@ public class BirthdaysFragment extends Fragment implements BirthdayItemClickInte
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.popupEdit){
+                if (item.getItemId() == R.id.popupEdit) {
 
                     Intent updateIntent = new Intent(getActivity(), AddBirthdayActivity.class);
                     updateIntent.putExtra("isEditMode", true);
@@ -227,7 +260,7 @@ public class BirthdaysFragment extends Fragment implements BirthdayItemClickInte
                     updateIntent.putExtra("BIRTHDAY_ID", birthdayList.get(position).getId());
                     startActivity(updateIntent);
 
-                }else if (item.getItemId() == R.id.popupDelete){
+                } else if (item.getItemId() == R.id.popupDelete) {
                     birthdayViewModel.deleteBirthday(birthdayList.get(position));
                     birthdayAdapter.notifyItemRemoved(position);
                     Toast.makeText(getActivity(), birthdayList.get(position).getName() + " Deleted", Toast.LENGTH_SHORT).show();
